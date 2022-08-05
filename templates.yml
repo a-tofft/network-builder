@@ -1,0 +1,36 @@
+router_cisco_asr920:
+  device_roles:
+    - access-router
+    - distribution-router
+  device_types:
+    - cisco_asr920
+  header: template_header.j2
+  ports: 
+    - cisco_ios_intf-infra-l3-asr920.j2
+  main_config:
+    - cisco_ios_mgmt-pe.j2
+    - cisco_ios_banner.j2
+    - cisco_ios_acls.j2
+    - cisco_ios_prefix-lists.j2
+    - cisco_ios_bgp-communities.j2
+    - cisco_ios_route-maps.j2
+    - cisco_ios_static-routes.j2
+    - cisco_ios_ipv6.j2
+    - cisco_ios_logging-pe.j2
+    - cisco_ios_services.j2
+    - cisco_ios_tcp.j2
+    - cisco_ios_bgp.j2
+    - cisco_ios_pe-config.j2
+    - cisco_ios_ospf.j2
+    - cisco_ios_mpls.j2
+    - cisco_ios_multicast.j2
+    - cisco_ios_misc-router.j2
+    - cisco_ios_misc-xe.j2
+    - cisco_ios_dns.j2
+    - cisco_ios_qos.j2
+    - cisco_ios_snmp-router.j2 
+    - cisco_ios_ntp.j2
+    - cisco_ios_security.j2
+    - cisco_ios_rsa-config.j2 
+  extras: 
+    iptv: cisco_ios_iptv-asr920.j2
