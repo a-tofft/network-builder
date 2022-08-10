@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "network config generator"
+version = "0.1.0"
+description = "One of many network configuration generators"
+authors = ["Anton <tofft.anton@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+netaddr = "0.8.0"
+Jinja2 = "2.11.3"
+pyaml = "20.4.0"
+python-slugify = "^6.1.2"

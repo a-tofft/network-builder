@@ -1,0 +1,20 @@
+cisco_c6500:
+  # Compatible Device Roles 
+  device_roles:
+    - access-router
+    - distribution-router
+  # Compatible Device Types
+  device_types:
+    - cisco_c6500
+  config:
+    - cisco_ios_acls.j2
+
+huawei_5720:
+  # Compatible Device Roles 
+  device_roles:
+    - access-switch
+  # Compatible Device Types
+  device_types:
+    - huawei_5720
+  config:
+    - cisco_ios_acls.j2

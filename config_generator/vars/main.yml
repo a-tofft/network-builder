@@ -1,22 +1,10 @@
 ssh_acl_entries_v4:
-  - comment: kundreg
-    prefix: 213.80.100.18/32
-  - comment: jourserver
-    prefix: 195.178.186.0/27
   - comment: linknets
-    prefix: 85.24.151.0/24
-  - comment: linknets
-    prefix: 46.59.112.0/22
-  - comment: linknets
-    prefix: 176.10.178.0/23
-  - comment: linknets
-    prefix: 176.10.180.0/22
+    prefix: 10.10.10.0/24
 
     
 ntp_servers_v4: 
-  - prefix: 193.11.166.8/32
-    comment: unknown
-  - prefix: 79.136.116.186/32
+  - prefix: 10.10.10.0/24
     comment: unknown
 
 
@@ -48,7 +36,6 @@ dns_servers_v4:
 syslog_servers:
   irc: 213.136.42.5
   ncc: 213.136.32.52
-  graylog: 212.85.81.29
 
 # FTP Servers
 ftp_servers:

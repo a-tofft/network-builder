@@ -1,3 +1,6 @@
+import logging
+import yaml
+
 def setup_logging(logger, log_level, console=True):
     """ Function to help setup logging across all modules """
 
@@ -14,3 +17,13 @@ def setup_logging(logger, log_level, console=True):
         logger.addHandler(console)
 
     return logger
+
+def load_yaml_file(file):
+    with open(file, "r") as stream:
+        try:
+            return(yaml.safe_load(stream))
+        except yaml.YAMLError as e:
+            print(f"Incorrect YAML format: {file} - {e}")
+        except Exception as e:
+            print(f"Incorrect YAML format: {file} - {e}")
+
