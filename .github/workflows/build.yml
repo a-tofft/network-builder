@@ -20,4 +20,4 @@ jobs:
      - name: Lint Python Code 
        shell: bash 
        run: | 
-          black . --check
+          poetry black . --check
