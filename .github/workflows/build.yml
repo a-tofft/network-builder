@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  lint:
     runs-on: self-hosted
     container:
       image: anttof/network-builder:latest # This is our private docker image.
@@ -20,4 +20,4 @@ jobs:
           ls -ahl
 
      - name: Lint Python Code 
-       run: poetry show
+       run: poetry run black . --check
