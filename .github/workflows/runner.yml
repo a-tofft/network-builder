@@ -19,6 +19,8 @@ jobs:
        run: |
           ls -ahl
 
+     
+
      #- name: Reinstall
      #  shell: bash
      #  run: |
@@ -29,3 +31,6 @@ jobs:
 
      - name: Lint Python Code 2
        run: black . --check
+
+     - name: Run Tests 
+       run: tests/verify_templates.py

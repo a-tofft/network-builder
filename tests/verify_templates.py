@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+print("hello")
+'''
 import sys
 import os
 import unittest
@@ -10,28 +13,25 @@ from app.constants import TemplateTypes
 # We don't actually connect to netbox for testing scenarios
 NETBOX_TOKEN = "ABC"
 
-class TestTemplates(unittest.TestCase):
 
+class TestTemplates(unittest.TestCase):
     def test_1_device_templates_short(self):
-        """ Try to get all template keys """
-        short = True # Just fetch keys
+        """Try to get all template keys"""
+        short = True  # Just fetch keys
         templates_short = ntm.get_templates(short)
 
-
     def test_2_device_templates(self):
-        """ Try to get all full templates """
-        short = False # Fetch full templates
+        """Try to get all full templates"""
+        short = False  # Fetch full templates
         templates_full = ntm.get_templates(short)
 
-
     def test_3_local_variables(self):
-        """ Try to load all local variables """
-        default_vars = True # Use default vars 
+        """Try to load all local variables"""
+        default_vars = True  # Use default vars
         local_vars = ntm.load_local_vars(default_vars)
 
-
     def test_4_template_rendering(self):
-        """ Try to render all templates using local variables only """
+        """Try to render all templates using local variables only"""
 
         templates_short = ntm.get_templates(True)
         local_vars = ntm.load_local_vars(True)
@@ -44,3 +44,4 @@ class TestTemplates(unittest.TestCase):
 if __name__ == "__main__":
     ntm = NetworkTemplateManager(NETBOX_TOKEN)
     unittest.main()
+'''
