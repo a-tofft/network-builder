@@ -19,5 +19,15 @@ jobs:
        run: |
           ls -ahl
 
+     - name: Check black 
+       shell: bash
+       run: |
+          which black
+
+     - name: Reinstall
+       shell: bash
+       run: |
+          poetry install
+
      - name: Lint Python Code 
        run: poetry run black . --check
