@@ -18,7 +18,9 @@ def setup_logging(logger, log_level, console=True):
 
     return logger
 
-def load_yaml_file(file):
+
+
+def load_yaml_file(file: str) -> dict:
     with open(file, "r") as stream:
         try:
             return(yaml.safe_load(stream))

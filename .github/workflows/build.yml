@@ -1,0 +1,9 @@
+name: build network 
+
+jobs:
+  build:
+    runs-on: self-hosted 
+
+    steps: 
+     - name: Check out this repository  
+       uses: actions/checkout@v2

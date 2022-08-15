@@ -1,0 +1,20 @@
+{% for intf in network %}
+interface {{ intf.name }}
+   description {{ intf.description }}
+   no switchport
+   {% for addr in intf.ips %}
+   {% if addr|prefix_to_version == 4 %}
+   ip address {{ addr }}
+   {% else %}
+   ipv6 address {{ addr }}
+   {% endif %}
+   {% endfor %}
+   {% if intf.ospf %}
+   ip ospf network point-to-point
+   ip ospf area {{ intf.ospf.area }}
+   ipv6 ospf network point-to-point
+   ipv6 ospf {{ ospf.process_id }} area {{ intf.ospf.area }}
+   {% endif %}
+{% endfor %}
+
+

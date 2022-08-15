@@ -1,0 +1,15 @@
+
+interface Loopback 0
+  description Routing - Loopback
+  {% for addr in network.lo0.ips %}
+    {% if addr|prefix_to_version == 4 %}
+  ip address {{ addr|prefix_to_ip }} {{ addr|prefix_to_netmask }}
+    {% endif %}
+  {% endfor %}
+  ip pim sparse-mode
+  ipv6 enable
+  {% for addr in network.lo0.ips %}
+    {% if addr|prefix_to_version == 6 %}
+  ipv6 address {{ addr }}
+    {% endif %}
+  {% endfor %}

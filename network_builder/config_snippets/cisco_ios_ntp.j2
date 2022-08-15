@@ -1,0 +1,15 @@
+
+ntp access-group peer 12
+ntp access-group serve 13
+ntp access-group serve-only 13
+ntp access-group query-only 13
+ntp update-calendar
+{% for entry in ntp_servers_v4 %}
+{% if loop.first %}
+ntp server {{ entry.prefix|prefix_to_ip }} minpoll 10 prefer
+{% else %}
+ntp server {{ entry.prefix|prefix_to_ip }}
+{% endif %}
+{% endfor %}
+clock timezone CET 1 0
+clock summer-time CEST recurring last Sun Mar 2:00 last Sun Oct 2:00

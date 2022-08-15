@@ -1,0 +1,8 @@
+{% for server in dns_servers_v4 %}
+ip name-server {{ server.ip }}
+{% endfor %}
+ip domain name {{ dns_domain }}
+
+! All SNMP/SSH messages are now sent as CS6 (NC class) to guarantee their arrival. Default according to documentation = dscp 0. 
+snmp-server ip dscp 48 
+ip ssh dscp 48

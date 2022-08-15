@@ -1,0 +1,57 @@
+router bgp 8473
+ bgp router-id {{ management.prefix_v4|prefix_to_ip }}
+ bgp log-neighbor-changes 
+ bgp deterministic-med
+ ! Requires "Neighbor x.x.x.x activate" to be configured under address-family ipv4 to enable IPv6 AFI neighbors only and safety reasons.  
+ no bgp default ipv4-unicast 
+ neighbor RR-SERVER peer-group 
+ neighbor RR-SERVER remote-as 8473 
+ neighbor RR-SERVER description RR-SERVER 
+ neighbor RR-SERVER update-source Loopback0 
+ neighbor RR-SERVER-IPV6 peer-group
+ neighbor RR-SERVER-IPV6 remote-as 8473
+ neighbor RR-SERVER-IPV6 description RR-SERVER-IPV6
+ neighbor RR-SERVER-IPV6 update-source Loopback0
+{% for server in route_reflector_servers[region] %}
+ neighbor {{ server.ipv4 }} peer-group RR-SERVER 
+ neighbor {{ server.ipv4 }} description {{ server.name }}
+ neighbor {{ server.ipv6 }} peer-group RR-SERVER-IPV6
+ neighbor {{ server.ipv6 }} description {{ server.name }}
+{% endfor %}
+
+address-family ipv4 
+ no synchronization
+ redistribute connected route-map BACKBONE-REDIST-CONNECTED
+ redistribute static route-map BACKBONE-REDIST-STATIC
+ neighbor RR-SERVER send-community both
+ neighbor RR-SERVER next-hop-self
+{% for server in route_reflector_servers[region] %}
+ neighbor {{ server.ipv4 }} activate 
+{% endfor %}
+
+address-family vpnv4 
+ neighbor RR-SERVER send-community both 
+{% for server in route_reflector_servers[region] %}
+ neighbor {{ server.ipv4 }} activate 
+{% endfor %}
+
+address-family ipv6 
+ redistribute connected route-map BACKBONE6-REDIST-CONNECTED
+ redistribute static route-map BACKBONE6-REDIST-STATIC
+ no synchronization
+ neighbor RR-SERVER-IPV6 send-community both
+ neighbor RR-SERVER-IPV6 next-hop-self
+{% for server in route_reflector_servers[region] %}
+ neighbor {{ server.ipv6 }} activate 
+{% endfor %}
+
+address-family vpnv6 
+ neighbor RR-SERVER send-community both 
+{% for server in route_reflector_servers[region] %}
+ neighbor {{ server.ipv4 }} activate 
+{% endfor %}
+ 
+address-family ipv4 mdt
+{% for server in route_reflector_servers[region] %}
+ neighbor {{ server.ipv4 }} activate 
+{% endfor %}

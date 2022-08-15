@@ -1,10 +1,11 @@
 class Config(object):  
 
     # General Settings
-    VARS_DIR = "vars"
+    GROUP_VARS = "vars/main.yml"
     TEMPLATES_FILE = "templates.yml"
     SNIPPETS_DIR = "config_snippets"
     INVENTORY = "inventory.yml"
+    CONFIGS_DIR = "configs"
 
     # LOGGING 
     LOG_LEVEL = "DEBUG" # DEBUG>INFO>WARNING>ERROR>CRITICAL
@@ -12,6 +13,10 @@ class Config(object):
 
     # ENVIRONMENT
     ENVIRONMENT = "STAGE"
+    
+    COMMENT_CHAR = {
+        "ceos": "!"
+    }
 
 
     # NAPALM

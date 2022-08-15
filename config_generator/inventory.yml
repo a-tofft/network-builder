@@ -1,9 +1,0 @@
-
-site: 
-  - hostname: rtr1-pot-gla
-    network: test2
-    site: pot-gla
-    ints:
-    - net1: 1
-    - net2: 2 
-    - net3: 3

@@ -1,0 +1,9 @@
+no service pad
+! Enables nagle's algorithm which reduces unnecessary overhead for telnet/ssh sessions that utilizes many, small data packets. 
+service nagle
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime
+service timestamps log datetime msec localtime
+service password-encryption
+service unsupported-transceiver

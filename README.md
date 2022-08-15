@@ -1,11 +1,29 @@
-# Network Configuration Generator
- - Yes, another one! 
-Wrote this a while back to demo some concepts relating to generation of configurations for device configs. 
+# Network Builder
+Yet another network configuration builder... Wrote this a while back to demo concepts relating to generation of network configuration for network devices and relating concepts such as:
+ - Scaling/Handling of multiple vendors, templates & "snippets"
+ - Different methods of resource allocation for devices 
+ - CI/CD in relation to config generation 
+ - Schema based verification of inventory 
+ - CI/CD based tests for verifying configuration
+ - Pre-Deployment tests utilizing batfish for verifiying... 
+ - Complete version history of: Templates & Configurations
+ - Support for CLI & OpenConfig
 
 ## Design Decisions
 Having a working SoT should always be priority #1. Trying to automate/generate configs for the network without this can quickly become messy. 
 The idea is that you generate full configurations, and push either full configurations (replace) to devices or see (extnesions) push the difference in configs. 
 With this approach, you don't need to take any backups of device configurations, as your SoT for configs is kept fully within this repository. 
+Note: For lab purposes, variables have not been abstracted and are rather explicit in what they mean.
+Normally it would be preferred to abstract variables and jinja2 templates
+# Features 
+
+### Variables 
+The less variables, the better. Rather use design decisions that naturally lead to same 
+configuration on every device without requirering any more variables. For example, always use uplink on port X, always use loopback X for management etc. This reduces complexity significantly. 
+
+### Speed:
+Generates configurations for 1000 devices in less than 2 minutes on a public github.
+Finds necessary configuration files that have been updated (and are ready to be pushed) in less than 1 minute for 1000 devices. 
 
 ## Ansible vs Python 
 Even with ansible, code will be required for certain extensions/issues. 
@@ -15,8 +33,19 @@ Verify fast, can generate configurations for 1000 devices within a minute on git
 
 ## Templating Concepts
 
-## Picture 
- - Insert picture that displays design 
+## Topology 
+
+![Topology](lab-topology.png)
+
+**Topology Table:**
+
+| Device  | MGMT0       | Loopback10      | Loopback0  | OS   |
+| ------- | ----------- | --------------- | ---------- | ---- |
+| acme-r1 | 172.20.20.21 | 192.168.10.0/24 | 10.10.10.1 | ceos |
+| acme-r2 | 172.20.20.22 | 192.168.20.0/24 | 10.10.10.2 | ceos |
+| nabu-r1 | 172.20.20.23 | 192.168.30.0/24 | 10.10.10.3 | ceos |
+| nabu-r2 | 172.20.20.24 | 192.168.40.0/24 | 10.10.10.4 | ceos |
+|         |             |                 |            |      |
 
 
 ## Walkthrough 
@@ -32,8 +61,16 @@ Verify fast, can generate configurations for 1000 devices within a minute on git
 As the vendors in your network grow and the different device types grow, it becomes hard to maintain the templates 
 for all the different devices... 
 
+
+### Inventory 
+Inventory is defined in inventory.yml 
+See extensions for how this inventory could be based in netbox 
+[Cerberus](cerberus) is used for validation of inventory. 
+Tests are run against inventory as part of CI/CD to validate that all tests are correcy.
+inventory-schema.yml is used to define the structure of the inventory.
+
 ### Templates 
-Templates are used to describe a complete device/service configuration. Templates are specified using yaml. Each device template has different sections used to differentiate what they are used for. See below for all sections in a template and an example. 
+Templates are used to describe a complete device configuration. Templates are specified using yaml. See below for all sections in a template and an example. 
 
 <details>
 <summary>Example</summary>
@@ -59,7 +96,7 @@ router_huawei_s6720:
 </details>
 
 ### Snippet 
-Snippets are Jinja2 files which contain small configuration snippets, that may be common for many different device/service templates. See below for an example. 
+Snippets are Jinja2 files which contain small configuration snippets, that may be common for many different device templates. See below for an example. 
 
 <details>
 <summary>Example</summary>
@@ -77,6 +114,7 @@ ip access-list standard IPV4-MGMT-SSH
 </details>
 
 # Tests 
+There are device in inventory that doesn't have any available templates
 
 # Develop locally 
  - Follow below steps to setup locally
@@ -87,7 +125,7 @@ ip access-list standard IPV4-MGMT-SSH
  * Filters are available at ```filters.py``` and more can be added as needed. Avoid using variables such as "mask/network/hsrp_ip" etc and instead specify prefix and use various filters to convert variable to correct format. 
  * Examples:
 ```
-neighbor {{ interfaces.lan.prefix_v4|lan_prefix_to_bgp(cpe.redundancy.type) }}
+neighbor {{ intf.addr|prefix_to_ip }}
 ip address {{ management.prefix_v4|prefix_to_ip }} {{ management.prefix_v4|prefix_to_netmask }}
 ```
 
@@ -131,6 +169,9 @@ Showcases examples of how a mix of devices, some using CLI and some using Netcon
 
 
 
+
+
+
 '''
 1. Load templates 
 2. Load common vars 
@@ -147,10 +188,18 @@ Use python decorators for logging as well as debugging.
 j2lint - Lint the jinj2 config 
 
 # Tests 
-Can inventory be read correctly?
-Has same interface been assigned multiple times? 
-
-
+- Can inventory be read correctly?
+- Has same interface been assigned multiple times? 
+- Duplicate snippets 
+- Duplicate templates 
+- Duplicate inventories
+- Validate OpenConfig yang files: https://github.com/mbj4668/pyang
+- Test all filters 
+- Linting / Black Code format checks 
+- Verify each jinja2 template individually that they are correct. Jina2 Lint?
+# License 
+Do what the fuck you want 
+Feel free to fork/clone and make changes.
 
 # Thoughts 
 Run Tests on any commit 
@@ -168,6 +217,37 @@ https://pc.nanog.org/static/published/meetings/NANOG75/1879/20190218_Garros_Mana
 https://www.reddit.com/r/networking/comments/i827qq/network_automation_is_a_fractured_mess/
 
 CICD: https://github.com/marketplace/actions/verify-changed-files
+
+ZTP: https://shnosh.io/jinja2-templating-freeztp/
+
+OpenConfig:
+ - https://karneliuk.com/2018/08/openconfig-part-3-advanced-openconfig-w-ansible-for-arista-eos-cisco-ios-xr-and-nokia-sr-os-route-policy-bgp-and-interfaces-again/
+ - https://ultraconfig.com.au/blog/python-automation-on-cisco-routers-in-2019/
+ - https://ultraconfig.com.au/blog/introduction-to-netconf-and-juniper-yang-models/
+ - https://ultraconfig.com.au/blog/how-to-configure-juniper-routers-with-netconf-via-xml-rpcs/
+ - https://developer.cisco.com/network-automation/
+ - https://developer.cisco.com/site/ydk/
+ - Good example: https://github.com/ksator/openconfig-demo-with-juniper-devices/blob/master/dc-vmx-1.oc.bgp.conf
+ - https://www.reddit.com/r/networking/comments/f7fm96/openconfig_ifip_config_container/
+ - https://linuxsimba.github.io/pyang-openconfig
+
+CI/CD:
+ - https://github.com/batfish/af19-demo
+ - https://www.youtube.com/watch?v=ky0pWtDrBPU (3 parts)
+ - https://aristanetworks.force.com/AristaCommunity/s/article/network-ci-part-3
+ - https://github.com/JohnBreth/CICD
+ - https://github.com/JulioPDX/ci_cd_dev
+ - https://juliopdx.com/2021/10/20/building-a-network-ci/cd-pipeline-part-1/ <-- FOLLOW THIS
+ - https://github.com/JulioPDX/multi-vendor-python <-- Use arista
+ - https://juliopdx.com/2021/08/15/basic-network-testing-with-nornir-and-ntc-templates/
+ - https://juliopdx.com/2021/08/14/automating-mpls-l3vpns-with-nornir/
+ - https://nwmichl.net/2020/10/28/network-infrastructure-as-code-with-ansible-part-1/
+
+ContainerLab:
+ - https://juliopdx.com/2021/12/10/my-journey-and-experience-with-containerlab/
+
+Arista NetConf:
+ - https://github.com/arista-netdevops-community/arista_eos_automation_with_ncclient
 
 
 
@@ -201,7 +281,29 @@ rtr3-pot-gla.example.net:
 sw1-pot-gla.example.net:
 
 
-# Check that checks if it is v4 or v6 address? 
+pot-gla:
+  - hostname: rtr1-pot-gla
+    device_type: cisco_c6500
+    device_role: access-router
+    asn: 65000
+    site: pot-gla
+    network:
+      lo0: 
+        ips: 
+         - 10.10.10.24/32
+         - 2001::932:24/128
+      
 
+
+  - hostname: rtr2-pot-gla
+    device_type: cisco_c6500
+    device_role: access-router
+    asn: 65000
+    site: pot-gla
+    network:
+      lo0: 
+        ips: 
+         - 10.10.10.24/32
+         - 2001::932:24/128
 
 '''

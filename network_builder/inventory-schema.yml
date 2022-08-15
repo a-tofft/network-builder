@@ -1,0 +1,23 @@
+site:
+ type: list
+ schema:
+  type: dict
+  schema:
+   vlan:
+    type: dict
+    schema:
+     id:
+      required: true 
+      regex: "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+      type: integer
+      min: 1
+      max: 4094
+     name:
+      type: string
+   ipv4:
+    type: dict
+    schema:
+     address:
+      type: ipv4address
+     prefix_length:
+      type: integer

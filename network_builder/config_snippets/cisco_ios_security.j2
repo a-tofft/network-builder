@@ -1,0 +1,65 @@
+enable secret 5 {{ passwords.enable.cisco_encrypted_md5 }}
+username bahnhof password 7 {{ passwords.enable.cisco_encrypted_7 }}
+
+aaa new-model
+
+aaa group server tacacs+ pio-spv
+{% for entry in tacacs_servers %}
+server-private {{ entry.ipv4 }} key 7 {{ passwords.tacacs.cisco_encrypted_7 }}
+{% endfor %}
+ip tacacs source-interface {{ management.interface }}
+
+aaa authentication login default group pio-spv local-case
+aaa authorization config-commands
+aaa authorization exec default group pio-spv none
+aaa authorization commands 1 default group pio-spv if-authenticated
+aaa authorization commands 15 default group pio-spv if-authenticated
+aaa accounting exec default start-stop group pio-spv
+aaa accounting commands 1 default start-stop group pio-spv
+aaa accounting commands 15 default start-stop group pio-spv
+
+aaa session-id common
+
+no ip http server
+no ip http secure-server
+
+line con 0
+ logging synchronous
+ password 7 {{ passwords.console.cisco_encrypted_7 }}
+ stopbits 1
+ escape-character 3
+
+line aux 0
+ password 7 {{ passwords.console.cisco_encrypted_7 }}
+ stopbits 1
+ escape-character 3
+
+line vty 0 4
+ access-class IPV4-MGMT-SSH in
+ exec-timeout 1440 0
+ password 7 {{ passwords.console.cisco_encrypted_7 }}
+ ipv6 access-class IPV6-MGMT-SSH in
+ logging synchronous
+ transport input ssh
+ transport output telnet ssh
+ escape-character 3
+
+line vty 5 14
+ access-class IPV4-MGMT-SSH in
+ exec-timeout 480 0
+ password 7 {{ passwords.console.cisco_encrypted_7 }}
+ ipv6 access-class IPV6-MGMT-SSH in
+ logging synchronous
+ transport input ssh
+ escape-character 3
+
+line vty 15
+ access-class IPV4-MGMT-SSH in
+ exec-timeout 0 30
+ password 7 {{ passwords.console.cisco_encrypted_7 }}
+ ipv6 access-class IPV6-MGMT-SSH in
+ logging synchronous
+ transport input ssh
+ escape-character 3
+
+no tacacs-server directed-request

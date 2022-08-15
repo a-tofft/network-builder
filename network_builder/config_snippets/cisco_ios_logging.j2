@@ -1,0 +1,14 @@
+logging buffered 510000 debugging
+logging trap informational
+logging console warnings
+logging host {{ syslog_servers.server1 }}
+logging host {{ syslog_servers.server2 }}
+
+archive
+ log config 
+  logging enable
+  ! The actual line that makes the rows appear as syslog messages  in "show logg". Probably best to filter these out from IRC logg channels. 
+  ! notify syslog
+  logging size 1000
+  ! Removes passwords etc from configuration changes shown.  
+  hidekeys 

@@ -1,0 +1,7 @@
+
+snmp-server view novacm internet included
+snmp-server view novacm snmpVacmMIB excluded
+snmp-server community {{ snmp_community }} RO ipv6 IPV6-MGMT-SNMP IPV4-MGMT-SNMP
+snmp-server community public RO ipv6 IPV6-MGMT-SNMP IPV4-MGMT-SNMP
+snmp-server host 213.136.32.52 public
+snmp-server ifindex persist
