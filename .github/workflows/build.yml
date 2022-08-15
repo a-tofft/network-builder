@@ -25,7 +25,7 @@ jobs:
      #     poetry install
 
      - name: Lint Python Code 
-       run: poetry shell
+       run: poetry install
 
-     - name: Lint Python Code 
-       run: black . --check
+     - name: Lint Python Code 2
+       run: poetry run black . --check
