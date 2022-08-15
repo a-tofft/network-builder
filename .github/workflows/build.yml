@@ -1,8 +1,14 @@
 name: build network 
 
+on:
+  push:
+    branches: [ main ]
+
 jobs:
   build:
-    runs-on: self-hosted 
+    runs-on: self-hosted
+    container:
+      image: net/network-builder:v1 # This is our private docker image.
 
     steps: 
      - name: Check out this repository  
