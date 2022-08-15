@@ -33,7 +33,7 @@ jobs:
        run: black . --check
 
      - name: Run Tests 
-       run: tests/verify_templates.py.
+       run: tests/verify_templates.py
 
      - name: generate_configs 
        working-directory: ./network_builder
