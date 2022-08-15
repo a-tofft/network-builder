@@ -13,9 +13,11 @@ jobs:
     steps: 
      - name: Check out this repository  
        uses: actions/checkout@v2
-     - name: Any Name Bash Test Step
+
+     - name: Simple Bash test 
        shell: bash
        run: |
-          echo "test"
+          ls -ahl
+
      - name: Lint Python Code 
-       run: poetry --version
+       run: poetry show
