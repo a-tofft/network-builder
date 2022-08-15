@@ -17,3 +17,7 @@ jobs:
        shell: bash
        run: |
           echo "test"
+     - name: Lint Python Code 
+       shell: bash 
+       run: | 
+          black . --check
