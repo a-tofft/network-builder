@@ -8,8 +8,12 @@ jobs:
   build:
     runs-on: self-hosted
     container:
-      image: net/network-builder:v1 # This is our private docker image.
+      image: anttof/network-builder:latest # This is our private docker image.
 
     steps: 
      - name: Check out this repository  
        uses: actions/checkout@v2
+     - name: Any Name Bash Test Step
+       shell: bash
+       run: |
+          echo "test"
