@@ -40,21 +40,25 @@ def prefix_to_version(prefix: str):
     net = IPNetwork(prefix)
     return net.version
 
+
 # Returns version of IP
 def ip_to_version(prefix: str):
     print(prefix)
     net = IPAddress(prefix)
     return net.version
 
+
 # Returns Network 192.168.0.5/24 == 192.168.0.0, 2001:9B0:1:606::4/48 == 2001:9B0:1:606::
 def prefix_to_network(prefix: str):
     net = IPNetwork(prefix)
     return net.network
 
+
 # Returns Prefix IP 192.168.0.5/24 == 192.168.0.5, 2001:9B0:1:606::4/48 == 2001:9B0:1:606::4
 def prefix_to_ip(prefix: str):
     net = IPNetwork(prefix)
     return net.ip
+
 
 # Returns first host IP 192.168.0.0/24 == 192.168.0.1
 def prefix_to_host(prefix: str):
@@ -64,13 +68,13 @@ def prefix_to_host(prefix: str):
 
 # List of all Active Filters:
 FILTERS = {
-        'slugify_string': slugify_string,
-        'prefix_to_len': prefix_to_len,
-        'prefix_to_wildcard': prefix_to_wildcard,
-        'prefix_to_netmask': prefix_to_netmask,        
-        'prefix_to_network': prefix_to_network,
-        'prefix_to_ip': prefix_to_ip,
-        'prefix_to_host': prefix_to_host,
-        'prefix_to_version': prefix_to_version,
-        'ip_to_version': ip_to_version
-        }
+    "slugify_string": slugify_string,
+    "prefix_to_len": prefix_to_len,
+    "prefix_to_wildcard": prefix_to_wildcard,
+    "prefix_to_netmask": prefix_to_netmask,
+    "prefix_to_network": prefix_to_network,
+    "prefix_to_ip": prefix_to_ip,
+    "prefix_to_host": prefix_to_host,
+    "prefix_to_version": prefix_to_version,
+    "ip_to_version": ip_to_version,
+}
