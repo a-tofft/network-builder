@@ -15,6 +15,7 @@ route-map GLOBAL_PREFIXES permit 10
 router bgp {{ services.bgp.asn }}
    router-id {{ addr_id }}
    bgp advertise-inactive
+   timers bgp {{ bgp.timers.keepalive }} {{ bgp.timers.hold }}
    neighbor INTERNAL remote-as {{ services.bgp.asn }}
    neighbor INTERNAL next-hop-self
    neighbor INTERNAL update-source Loopback0

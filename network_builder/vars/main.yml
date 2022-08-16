@@ -26,6 +26,9 @@ syslog:
 
 # BGP Parameters
 bgp:
+  timers:
+    keepalive: 10 
+    hold: 30
   global_prefixes:
    - 192.168.10.0/24
    - 192.168.20.0/24

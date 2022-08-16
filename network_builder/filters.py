@@ -36,14 +36,12 @@ def prefix_to_netmask(prefix: str):
 # 4 for IPv4
 # 6 for IPv6
 def prefix_to_version(prefix: str):
-    print(prefix)
     net = IPNetwork(prefix)
     return net.version
 
 
 # Returns version of IP
 def ip_to_version(prefix: str):
-    print(prefix)
     net = IPAddress(prefix)
     return net.version
 

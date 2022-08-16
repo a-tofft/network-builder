@@ -15,7 +15,6 @@ from jinja2 import (
 from jinja2.meta import find_undeclared_variables
 from config import Config as config
 from pprint import pprint
-import pdb
 
 
 class UndefinedVars(Undefined):
@@ -115,12 +114,26 @@ def load_template(template: dict) -> str:
 
 
 def write_config_file(hostname: str, host_config: str) -> bool:
+    """Writes configuration to file. Only writes config if it has changed
+    during generation. Returns True if file is written and False if
+    file doesn't need a change"""
 
-    with open(f"{config.CONFIGS_DIR}/{hostname}.conf", "w") as f:
-        f.write(host_config)
+    # Open existing file/config
+    try:
+        f = open(f"{config.CONFIGS_DIR}/{hostname}.conf", "r")
+        current_config = f.read()
         f.close()
 
-    return True
+    except FileNotFoundError:
+        current_config = None
+
+    # Overwrite/Create config file if change is required.
+    if current_config != host_config:
+        with open(f"{config.CONFIGS_DIR}/{hostname}.conf", "w+") as f:
+            f.write(host_config)
+            return True
+    else:
+        return False
 
 
 def render_config(template: str, render_vars: dict) -> str:
@@ -144,6 +157,7 @@ def render_config(template: str, render_vars: dict) -> str:
         # Render Config
         j2_tmpl = env.from_string(template)
         host_config = j2_tmpl.render(render_vars)
+        return host_config
 
     except:
 
@@ -155,16 +169,14 @@ def render_config(template: str, render_vars: dict) -> str:
         else:
             return host_config
 
-    return host_config
-
 
 if __name__ == "__main__":
-    print("hello")
+    changed_configs = 0
     inventory = load_yaml_file(config.INVENTORY)
     # pprint(inventory)
 
     templates = load_templates()
-    pprint(templates)
+    # pprint(templates)
 
     for site, hosts in inventory.items():
 
@@ -175,21 +187,26 @@ if __name__ == "__main__":
 
             # Loads all variables into a single dictionary
             render_vars = load_vars(host)
-            pprint(render_vars)
+            # pprint(render_vars)
 
             # Load all "snippets" from config section of template
             # And return a single jinja2 string ready to be rendered
-            print(template["config"])
+            # print(template["config"])
             template_string = load_template(template)
 
             # Render config by combining variables and jinja2 string
             host_config = render_config(template_string, render_vars)
 
             # Print config
-            print(host_config)
+            # print(host_config)
 
             # Write Config to File
-            write_config_file(host["hostname"], host_config)
+            changed_config = write_config_file(host["hostname"], host_config)
+            changed_configs += int(changed_config)
+
+    print(changed_configs)
+
+    """ cleanup configs that weren't used. """
 
     # for site in inventory:
     #    for

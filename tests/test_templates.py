@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 print("hello")
 '''
+Run tests on snippets/config to make sure they are up to standard. 
+
 import sys
 import os
 import unittest

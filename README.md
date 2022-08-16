@@ -25,7 +25,8 @@ configuration on every device without requirering any more variables. For exampl
 Generates configurations for 1000 devices in less than 2 minutes on a public github.
 Finds necessary configuration files that have been updated (and are ready to be pushed) in less than 1 minute for 1000 devices. 
 
-## Ansible vs Python 
+## Ansible vs Python
+Easy to extend functionality which is likely needed for 
 Even with ansible, code will be required for certain extensions/issues. 
 Speed 
 Therefore, as with the concept of usin... 
@@ -55,7 +56,12 @@ Verify fast, can generate configurations for 1000 devices within a minute on git
     2. adds
     3. asd
  3. dsad
- 4.  
+
+ * Branch is made and changes are done 
+ * Changes are pushed to branch and tests are run 
+ * If all tests are successful, the changes are pushed to the stage branch as a request
+ * Changes are then accepted by a human and merged
+ * Necessary configurations are pushed to devices. 
 
 # Configuration Templates & Snippets 
 As the vendors in your network grow and the different device types grow, it becomes hard to maintain the templates 
@@ -249,7 +255,7 @@ ContainerLab:
 Arista NetConf:
  - https://github.com/arista-netdevops-community/arista_eos_automation_with_ncclient
 
-
+```
 
 site: pot-gla
   name: rtr1-pot-gla
@@ -306,4 +312,4 @@ pot-gla:
          - 10.10.10.24/32
          - 2001::932:24/128
 
-'''
+```

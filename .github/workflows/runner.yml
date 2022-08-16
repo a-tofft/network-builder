@@ -26,9 +26,6 @@ jobs:
      #  run: |
      #     poetry install
 
-     #- name: Lint Python Code 
-     #  run: poetry install
-
      - name: Lint Python Code 2
        run: black . --check
 
@@ -38,3 +35,11 @@ jobs:
      - name: generate_configs 
        working-directory: ./network_builder
        run: ./network_builder.py
+
+     - name: Simple Bash test 
+       shell: bash
+       run: |
+          ls -ahl
+
+     - name: Test Configuration via Batfish 
+       run: tests/test_configs.py --disable-pytest-warnings -s
