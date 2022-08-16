@@ -42,5 +42,11 @@ jobs:
     runs-on: self-hosted
 
     steps: 
+     - name: Check out this repository  
+       uses: actions/checkout@v2
+
+     - name: install pybatfish 
+       run: pip install pybatfish rich
+
      - name: Test Configuration via Batfish 
        run: tests/test_configs.py --disable-pytest-warnings -s
