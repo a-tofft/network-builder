@@ -29,9 +29,6 @@ jobs:
      - name: Lint Python Code 2
        run: black . --check
 
-     - name: Run Tests 
-       run: tests/verify_templates.py
-
      - name: generate_configs 
        working-directory: ./network_builder
        run: ./network_builder.py
