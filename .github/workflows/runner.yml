@@ -38,5 +38,9 @@ jobs:
        run: |
           ls -ahl
 
+  test_configs:
+    runs-on: self-hosted
+
+    steps: 
      - name: Test Configuration via Batfish 
        run: tests/test_configs.py --disable-pytest-warnings -s
