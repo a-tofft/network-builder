@@ -42,8 +42,10 @@ jobs:
     runs-on: self-hosted
 
     steps: 
-     - name: Check out this repository  
-       uses: actions/checkout@v2
+     - name: Simple Bash test 
+       shell: bash
+       run: |
+          ls -ahl
 
      - name: install pybatfish 
        run: pip install pybatfish rich
