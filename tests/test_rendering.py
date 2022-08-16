@@ -1,19 +1,11 @@
 #!/usr/bin/env python
-print("hello")
-'''
-Run tests on snippets/config to make sure they are up to standard. 
-
 import sys
 import os
 import unittest
 
 sys.path.append(".")
-from app.service.ntm import NetworkTemplateManager
-from app.config import Config as config
-from app.constants import TemplateTypes
-
-# We don't actually connect to netbox for testing scenarios
-NETBOX_TOKEN = "ABC"
+from network_builder.network_builder import 
+from network_builder.config import Config as config
 
 
 class TestTemplates(unittest.TestCase):
@@ -44,6 +36,28 @@ class TestTemplates(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    ntm = NetworkTemplateManager(NETBOX_TOKEN)
     unittest.main()
-'''
+
+
+```
+    # Find template to use for host:
+    template = identify_device_template(templates, host)
+
+    # Loads all variables into a single dictionary
+    render_vars = load_vars(host)
+    # pprint(render_vars)
+
+    # Load all "snippets" from config section of template
+    # And return a single jinja2 string ready to be rendered
+    # print(template["config"])
+    template_string = load_template(template)
+
+    # Render config by combining variables and jinja2 string
+    host_config = render_config(template_string, render_vars)
+
+    # Print config
+    # print(host_config)
+
+    # Write Config to File
+    changed_config = write_config_file(host["hostname"], host_config)
+```
