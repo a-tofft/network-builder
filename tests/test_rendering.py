@@ -4,7 +4,7 @@ import os
 import unittest
 
 sys.path.append(".")
-from network_builder.network_builder import 
+from network_builder.network_builder import *
 from network_builder.config import Config as config
 
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     unittest.main()
 
 
-```
+"""
     # Find template to use for host:
     template = identify_device_template(templates, host)
 
@@ -60,4 +60,4 @@ if __name__ == "__main__":
 
     # Write Config to File
     changed_config = write_config_file(host["hostname"], host_config)
-```
+"""
