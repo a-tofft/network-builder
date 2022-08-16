@@ -90,6 +90,5 @@ def main():
     test_bgp_unestablished(init_snap)
 
 
-s
 if __name__ == "__main__":
     main()
