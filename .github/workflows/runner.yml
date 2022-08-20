@@ -66,6 +66,7 @@ jobs:
        working-directory: ${{ env.APP_DIR }}
        run: ./network_builder.py
 
+
   test_configs:
     runs-on: self-hosted
     needs: [build_configs]
@@ -77,3 +78,30 @@ jobs:
 
      - name: Test Configuration via Batfish 
        run: batfish/test_configs.py --disable-pytest-warnings -s
+
+       # Commit changes to repository if they succeed
+     #- name: Commit and push if it changed
+     #  run: |-
+     #   git config user.name "Automated"
+     #   git config user.email "actions@users.noreply.github.com"
+     #   git add -A
+     #   timestamp=$(date -u)
+     #   git commit -m "Latest data: ${timestamp}" || exit 0
+     #   git push
+
+  deploy_configs:
+    runs-on: self-hosted
+    needs: [test_configs]
+    container:
+      image: anttof/network-builder:latest
+
+    steps: 
+     - name: Check out this repository  
+       uses: actions/checkout@v2
+
+     - name: deploy_configs
+       working-directory: ${{ env.APP_DIR }}
+       run: ./network_builder.py
+       env:
+         SSH_AUTH_USERNAME: ${{ secrets.SSH_AUTH_USERNAME }}
+         SSH_AUTH_PASSWORD: ${{ secrets.SSH_AUTH_PASSWORD }}
