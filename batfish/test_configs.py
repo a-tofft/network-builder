@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-from pybatfish.client.asserts import (assert_no_duplicate_router_ids,
-                                      assert_no_incompatible_bgp_sessions,
-                                      assert_no_incompatible_ospf_sessions,
-                                      assert_no_unestablished_bgp_sessions)
+from pybatfish.client.asserts import (
+    assert_no_duplicate_router_ids,
+    assert_no_incompatible_bgp_sessions,
+    assert_no_incompatible_ospf_sessions,
+    assert_no_unestablished_bgp_sessions,
+)
 from pybatfish.client.commands import *
-# from pybatfish.client.session import Session
 from pybatfish.question import load_questions
 from rich.console import Console
 

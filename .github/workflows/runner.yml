@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
 
+env:
+  APP_DIR: ./network_builder
+
 jobs:
   lint_code:
     runs-on: self-hosted
@@ -23,7 +26,7 @@ jobs:
        run: black . --check
 
      - name: Isort Python Import Sort
-       run: isort . --check
+       run: isort . --profile black --check
 
 
   test_code:
@@ -36,12 +39,12 @@ jobs:
        uses: actions/checkout@v2
 
      - name: Test Jinja2 Filters
-       working-directory: ./network_builder
+       working-directory: $APP_DIR
        run: python -m unittest tests.test_filters -v
 
       #  python -m unittest discover -s tests -v
      - name: Test Network Builder
-       working-directory: ./network_builder
+       working-directory: $APP_DIR
        run: python -m unittest tests.test_network_builder -v
 
   build_configs:
@@ -55,7 +58,7 @@ jobs:
        uses: actions/checkout@v2
 
      - name: generate_configs 
-       working-directory: ./network_builder
+       working-directory: $APP_DIR
        run: ./network_builder.py
 
   test_configs:

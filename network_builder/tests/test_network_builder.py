@@ -1,14 +1,16 @@
 #!/usr/bin/env python
-import os
-import sys
 import unittest
 
 from config import Config as config
 from filters import *
 from helpers import load_yaml_file
 
-from network_builder import (load_template, load_templates, render_config,
-                             write_config_file)
+from network_builder import (
+    load_template,
+    load_templates,
+    render_config,
+    write_config_file,
+)
 
 
 class TestNetworkBuilder(unittest.TestCase):
