@@ -1,20 +1,21 @@
 #!/usr/bin/env python
-from helpers import load_yaml_file
-from filters import *
-import glob
 import logging
+import os
+from pprint import pprint
+
+from config import Config as config
+from filters import *
+from helpers import load_yaml_file
 from jinja2 import (
+    DebugUndefined,
     Environment,
     FileSystemLoader,
-    Undefined,
-    meta,
     PackageLoader,
     Template,
-    DebugUndefined,
+    Undefined,
+    meta,
 )
 from jinja2.meta import find_undeclared_variables
-from config import Config as config
-from pprint import pprint
 
 
 class UndefinedVars(Undefined):
@@ -42,18 +43,11 @@ class NTMException(Exception):
         return self.msg
 
 
-def load_templates(short=False):
+def load_templates():
     """Returns all templates
     Short keyword return a list with all the name of all templates"""
 
     templates_file = load_yaml_file(config.TEMPLATES_FILE)
-
-    if short:
-        templates = list(templates_file.keys())
-    else:
-        templates = []
-        for tmpl in templates_file:
-            templates.append(tmpl)
 
     return templates_file
 
@@ -75,8 +69,7 @@ def load_vars(host: dict) -> dict:
 
 
 def identify_device_template(templates: list, device: dict) -> dict:
-    """Tries to find correct template by finding matching device_type and device_role
-    on the device in netbox and returns correct template"""
+    """Tries to find correct template by finding matching device_type and device_role"""
 
     for template in templates:
         # pdb.set_trace()
@@ -170,8 +163,13 @@ def render_config(template: str, render_vars: dict) -> str:
             return host_config
 
 
-if __name__ == "__main__":
-    changed_configs = 0
+def main():
+    modifications = {
+        "untouched_configs": [],
+        "updated_configs": [],
+        "deleted_configs": [],
+    }
+
     inventory = load_yaml_file(config.INVENTORY)
     # pprint(inventory)
 
@@ -202,11 +200,24 @@ if __name__ == "__main__":
 
             # Write Config to File
             changed_config = write_config_file(host["hostname"], host_config)
-            changed_configs += int(changed_config)
+            if changed_config:
+                modifications["updated_configs"].append(host["hostname"])
+            else:
+                modifications["unchanged_configs"].append(host["hostname"])
 
-    print(changed_configs)
 
-    """ cleanup configs that weren't used. """
+def cleanup_configs(modifications):
+    """cleanup configs that weren't used."""
 
-    # for site in inventory:
-    #    for
+    for file in os.listdir(config.CONFIGS_DIR):
+        host = file.removesuffix(".conf")
+        if (
+            host not in modifications["updated_configs"]
+            or modifications["unchanged_configs"]
+        ):
+
+            print(os.path.join("/mydir", file))
+
+
+if __name__ == "__main__":
+    main()

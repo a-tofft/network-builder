@@ -1,0 +1,7 @@
+{% for server in ntp.servers %}
+{% if loop.first %}
+ntp server {{ server.addr|prefix_to_ip }} prefer
+{% else %}
+ntp server {{ server.addr|prefix_to_ip }}
+{% endif %}
+{% endfor %}

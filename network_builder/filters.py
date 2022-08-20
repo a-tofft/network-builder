@@ -1,4 +1,4 @@
-from netaddr import IPNetwork, IPAddress
+from netaddr import IPAddress, IPNetwork
 from slugify import slugify
 
 
@@ -14,54 +14,54 @@ def slugify_string(text: str) -> str:
     return slugify(text, separator="_", lowercase=False)
 
 
-# Returns Prefix Length: 192.168.0.5/24 == 24, 2001:9B0:1:606::0/48 == 48
+# Returns Prefix Length: 192.168.0.5/24 == 24, 2001:B32:100::5/48 == 48
 def prefix_to_len(prefix: str) -> int:
     net = IPNetwork(prefix)
-    return net.prefixlen
+    return int(net.prefixlen)
 
 
 # Returns Wildcard 192.168.0.5/24 == 0.0.0.255
-def prefix_to_wildcard(prefix: str):
+def prefix_to_wildcard(prefix: str) -> str:
     net = IPNetwork(prefix)
-    return net.hostmask
+    return str(net.hostmask)
 
 
 # Returns Netmask 192.168.0.5/24 == 255.255.255.0
-def prefix_to_netmask(prefix: str):
+def prefix_to_netmask(prefix: str) -> str:
     net = IPNetwork(prefix)
-    return net.netmask
+    return str(net.netmask)
 
 
 # Returns version of Prefix
 # 4 for IPv4
 # 6 for IPv6
-def prefix_to_version(prefix: str):
+def prefix_to_version(prefix: str) -> int:
     net = IPNetwork(prefix)
-    return net.version
+    return int(net.version)
 
 
 # Returns version of IP
-def ip_to_version(prefix: str):
+def ip_to_version(prefix: str) -> str:
     net = IPAddress(prefix)
-    return net.version
+    return str(net.version)
 
 
-# Returns Network 192.168.0.5/24 == 192.168.0.0, 2001:9B0:1:606::4/48 == 2001:9B0:1:606::
-def prefix_to_network(prefix: str):
+# Returns Network 192.168.0.5/24 == 192.168.0.0, 2001:B32:100::5/48 == 2001:B32:100::
+def prefix_to_network(prefix: str) -> str:
     net = IPNetwork(prefix)
-    return net.network
+    return str(net.network)
 
 
-# Returns Prefix IP 192.168.0.5/24 == 192.168.0.5, 2001:9B0:1:606::4/48 == 2001:9B0:1:606::4
-def prefix_to_ip(prefix: str):
+# Returns Prefix IP 192.168.0.5/24 == 192.168.0.5, 2001:B32:100::5/48 == 2001:B32:100::5
+def prefix_to_ip(prefix: str) -> str:
     net = IPNetwork(prefix)
-    return net.ip
+    return str(net.ip)
 
 
 # Returns first host IP 192.168.0.0/24 == 192.168.0.1
-def prefix_to_host(prefix: str):
+def prefix_to_first_host(prefix: str) -> str:
     net = IPNetwork(prefix)
-    return net.ip[1]
+    return str(net.ip[1])
 
 
 # List of all Active Filters:
@@ -72,7 +72,7 @@ FILTERS = {
     "prefix_to_netmask": prefix_to_netmask,
     "prefix_to_network": prefix_to_network,
     "prefix_to_ip": prefix_to_ip,
-    "prefix_to_host": prefix_to_host,
+    "prefix_to_host": prefix_to_first_host,
     "prefix_to_version": prefix_to_version,
     "ip_to_version": ip_to_version,
 }
