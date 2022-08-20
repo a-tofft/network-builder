@@ -46,6 +46,7 @@ jobs:
 
   build_configs:
     runs-on: self-hosted
+    needs: [lint_code, test_code]
     container:
       image: anttof/network-builder:latest
 
@@ -59,6 +60,7 @@ jobs:
 
   test_configs:
     runs-on: self-hosted
+    needs: [build_configs]
 
     steps: 
 
