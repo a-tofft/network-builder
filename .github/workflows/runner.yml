@@ -38,6 +38,11 @@ jobs:
      - name: Check out this repository  
        uses: actions/checkout@v2
 
+     - name: Simple Bash test 
+       working-directory: ${{ env.base_directory }}
+       shell: bash
+       run: pwd
+
      - name: Test Jinja2 Filters
        working-directory: ${{ env.base_directory }}
        run: python -m unittest tests.test_filters -v
