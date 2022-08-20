@@ -6,15 +6,7 @@ from pprint import pprint
 from config import Config as config
 from filters import *
 from helpers import load_yaml_file
-from jinja2 import (
-    DebugUndefined,
-    Environment,
-    FileSystemLoader,
-    PackageLoader,
-    Template,
-    Undefined,
-    meta,
-)
+from jinja2 import DebugUndefined, Environment, FileSystemLoader, Undefined
 from jinja2.meta import find_undeclared_variables
 
 
@@ -43,13 +35,13 @@ class NTMException(Exception):
         return self.msg
 
 
-def load_templates():
+def load_templates(template_file):
     """Returns all templates
     Short keyword return a list with all the name of all templates"""
 
-    templates_file = load_yaml_file(config.TEMPLATES_FILE)
+    templates = load_yaml_file(template_file)
 
-    return templates_file
+    return templates
 
 
 def load_vars(host: dict) -> dict:
@@ -113,7 +105,7 @@ def write_config_file(hostname: str, host_config: str) -> bool:
 
     # Open existing file/config
     try:
-        f = open(f"{config.CONFIGS_DIR}/{hostname}.conf", "r")
+        f = open(f"{config.CONFIGS_DIR}/{hostname}{config.CONFIG_FILE_SUFFIX}", "r")
         current_config = f.read()
         f.close()
 
@@ -122,7 +114,9 @@ def write_config_file(hostname: str, host_config: str) -> bool:
 
     # Overwrite/Create config file if change is required.
     if current_config != host_config:
-        with open(f"{config.CONFIGS_DIR}/{hostname}.conf", "w+") as f:
+        with open(
+            f"{config.CONFIGS_DIR}/{hostname}{config.CONFIG_FILE_SUFFIX}", "w+"
+        ) as f:
             f.write(host_config)
             return True
     else:
@@ -164,17 +158,15 @@ def render_config(template: str, render_vars: dict) -> str:
 
 
 def main():
-    modifications = {
-        "untouched_configs": [],
-        "updated_configs": [],
-        "deleted_configs": [],
+    config_files = {
+        "untouched": [],
+        "updated": [],
+        "deleted": [],
     }
 
     inventory = load_yaml_file(config.INVENTORY)
-    # pprint(inventory)
 
-    templates = load_templates()
-    # pprint(templates)
+    templates = load_templates(config.TEMPLATES_FILE)
 
     for site, hosts in inventory.items():
 
@@ -185,38 +177,39 @@ def main():
 
             # Loads all variables into a single dictionary
             render_vars = load_vars(host)
-            # pprint(render_vars)
 
             # Load all "snippets" from config section of template
             # And return a single jinja2 string ready to be rendered
             # print(template["config"])
-            template_string = load_template(template)
+            render_string = load_template(template)
 
             # Render config by combining variables and jinja2 string
-            host_config = render_config(template_string, render_vars)
-
-            # Print config
-            # print(host_config)
+            host_config = render_config(render_string, render_vars)
 
             # Write Config to File
             changed_config = write_config_file(host["hostname"], host_config)
             if changed_config:
-                modifications["updated_configs"].append(host["hostname"])
+                config_files["updated"].append(host["hostname"])
             else:
-                modifications["unchanged_configs"].append(host["hostname"])
+                config_files["untouched"].append(host["hostname"])
+
+    config_files["deleted"] = cleanup_configs(config_files)
+    for file in config_files["deleted"]:
+        os.remove(f"{config.CONFIGS_DIR}/{file}")
+
+    print(config_files)
 
 
-def cleanup_configs(modifications):
+def cleanup_configs(config_files: dict) -> list:
     """cleanup configs that weren't used."""
-
+    deleted = []
     for file in os.listdir(config.CONFIGS_DIR):
-        host = file.removesuffix(".conf")
-        if (
-            host not in modifications["updated_configs"]
-            or modifications["unchanged_configs"]
-        ):
+        if file.endswith(config.CONFIG_FILE_SUFFIX):
+            host = file[: -(len(config.CONFIG_FILE_SUFFIX))]
+            if host not in config_files["untouched"] or config_files["updated"]:
+                deleted.append(file)
 
-            print(os.path.join("/mydir", file))
+    return deleted
 
 
 if __name__ == "__main__":

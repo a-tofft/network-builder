@@ -6,6 +6,7 @@ class Config(object):
     SNIPPETS_DIR = "config_snippets"
     INVENTORY = "inventory.yml"
     CONFIGS_DIR = "configs"
+    CONFIG_FILE_SUFFIX = ".conf"
 
     # LOGGING
     LOG_LEVEL = "DEBUG"  # DEBUG>INFO>WARNING>ERROR>CRITICAL

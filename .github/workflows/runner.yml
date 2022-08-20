@@ -25,15 +25,6 @@ jobs:
      - name: Isort Python Import Sort
        run: isort . --check
 
-     - name: generate_configs 
-       working-directory: ./network_builder
-       run: ./network_builder.py
-
-     - name: Simple Bash test 
-       shell: bash
-       run: |
-          ls -ahl
-
 
   test_code:
     runs-on: self-hosted
@@ -45,8 +36,26 @@ jobs:
        uses: actions/checkout@v2
 
      - name: Test Jinja2 Filters
-       run: tests/test_filters.py --disable-pytest-warnings -s
+       working-directory: ./network_builder
+       run: python -m unittest tests.test_filters -v
 
+      #  python -m unittest discover -s tests -v
+     - name: Test Network Builder
+       working-directory: ./network_builder
+       run: python -m unittest tests.test_network_builder -v
+
+  build_configs:
+    runs-on: self-hosted
+    container:
+      image: anttof/network-builder:latest
+
+    steps: 
+     - name: Check out this repository  
+       uses: actions/checkout@v2
+
+     - name: generate_configs 
+       working-directory: ./network_builder
+       run: ./network_builder.py
 
   test_configs:
     runs-on: self-hosted
@@ -57,4 +66,4 @@ jobs:
        run: pip install pybatfish rich
 
      - name: Test Configuration via Batfish 
-       run: tests/test_configs.py --disable-pytest-warnings -s
+       run: batfish/test_configs.py --disable-pytest-warnings -s

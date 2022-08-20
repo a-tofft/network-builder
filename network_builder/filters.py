@@ -61,6 +61,7 @@ def prefix_to_ip(prefix: str) -> str:
 # Returns first host IP 192.168.0.0/24 == 192.168.0.1
 def prefix_to_first_host(prefix: str) -> str:
     net = IPNetwork(prefix)
+    print(net.ip[1])
     return str(net.ip[1])
 
 
