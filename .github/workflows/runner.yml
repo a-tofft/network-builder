@@ -41,7 +41,7 @@ jobs:
      - name: Simple Bash test 
        working-directory: ${{ env.base_directory }}
        shell: bash
-       run: pwd
+       run: ls -ahl
 
      - name: Test Jinja2 Filters
        working-directory: ${{ env.base_directory }}
