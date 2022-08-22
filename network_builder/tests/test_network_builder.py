@@ -4,7 +4,7 @@ import unittest
 from config import Config as config
 from filters import *
 
-from network_builder import load_templates, render_config
+from network_builder import render_config
 
 
 class TestNetworkBuilder(unittest.TestCase):
@@ -13,7 +13,8 @@ class TestNetworkBuilder(unittest.TestCase):
         input_tmpl = "hostname {{ hostname }}"
         input_vars = {"hostname": "test-device"}
         expected = "hostname test-device"
-        output = render_config(input_tmpl, input_vars)
+        task = ""
+        output = render_config(task, input_tmpl, input_vars)
         self.assertEqual(output, expected)
 
     """
