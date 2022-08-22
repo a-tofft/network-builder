@@ -1,4 +1,22 @@
 {% for intf in network %}
+
+{% if "lo" in intf.name | lower %}
+interface {{ intf.name }}
+   description {{ intf.description }}
+   {% for addr in intf.ips %}
+   {% if addr|prefix_to_version == 4 %}
+   ip address {{ addr }}
+   {% else %}
+   ipv6 address {{ addr }}
+   {% endif %}
+   {% endfor %}
+   {% if intf.ospf %}
+   ip ospf area {{ intf.ospf.area }}
+   ipv6 ospf {{ ospf.process_id }} area {{ intf.ospf.area }}
+   {% endif %}
+
+{% else %}
+
 interface {{ intf.name }}
    description {{ intf.description }}
    no switchport
@@ -15,6 +33,8 @@ interface {{ intf.name }}
    ipv6 ospf network point-to-point
    ipv6 ospf {{ ospf.process_id }} area {{ intf.ospf.area }}
    {% endif %}
-{% endfor %}
+{% endif %}
 
+
+{% endfor %}
 

@@ -1,10 +1,12 @@
-
-
-acme:
-  - hostname: acme-r1
-    device_type: ceos
-    device_role: access-router
-    site: acme
+---
+acme-r1:
+  hostname: acme-r1
+  groups:
+   - acme 
+   - arista_eos
+  data: 
+    type: ceos
+    role: access-router
     addr_id: 10.10.10.1
     mgmt: 
       intf: Management0 
@@ -14,32 +16,35 @@ acme:
       - name: lo0
         description: ROUTER LOOPBACK
         ips: 
-         - 10.10.10.1/32
+          - 10.10.10.1/32
         ospf: 
           area: 0.0.0.0
       - name: lo10
         description: TEST NETWORK
         ips: 
-         - 192.168.10.1/24
+          - 192.168.10.1/24
       - name: eth1
         description: ACME-R1 -> ACME-R2
         mtu: 1500
         ips:
-         - 10.100.0.0/31
+          - 10.100.0.0/31
         ospf: 
           area: 0.0.0.0
     services:
       bgp: 
-        asn: 100 
         peers:
-         - name: ACME-R2
-           ip: 10.10.10.2
-           asn: 100
+          - name: ACME-R2
+            ip: 10.10.10.2
+            asn: 100
 
-  - hostname: acme-r2
-    device_type: ceos
-    device_role: access-router
-    site: acme
+acme-r2:
+  hostname: acme-r2
+  groups:
+   - acme 
+   - arista_eos
+  data: 
+    type: ceos
+    role: access-router
     addr_id: 10.10.10.2
     mgmt: 
       intf: Management0 
@@ -49,43 +54,45 @@ acme:
       - name: lo0
         description: ROUTER LOOPBACK
         ips: 
-         - 10.10.10.2/32
+          - 10.10.10.2/32
         ospf: 
           area: 0.0.0.0
       - name: lo10
         description: TEST NETWORK
         ips: 
-         - 192.168.20.1/24
+          - 192.168.20.1/24
       - name: eth1
         description: ACME-R2 -> ACME-R1
         mtu: 1500
         ips:
-         - 10.100.0.1/31
+          - 10.100.0.1/31
         ospf: 
           area: 0.0.0.0
       - name: eth2
         description: ACME-R2 -> NABU-R2
         mtu: 1500
         ips:
-         - 10.100.0.2/31
+          - 10.100.0.2/31
 
     services:
       bgp: 
-        asn: 100 
         peers:
-         - name: NABU-R2
-           ip: 10.100.0.3
-           asn: 200
-         - name: ACME-R1
-           ip: 10.10.10.1
-           asn: 100
+          - name: NABU-R2
+            ip: 10.100.0.3
+            asn: 200
+          - name: ACME-R1
+            ip: 10.10.10.1
+            asn: 100
 
-nabu:
 
-  - hostname: nabu-r1
-    device_type: ceos
-    device_role: access-router
-    site: nabu
+nabu-r1:
+  hostname: nabu-r1
+  groups:
+   - nabu 
+   - arista_eos
+  data: 
+    type: ceos
+    role: access-router
     addr_id: 10.10.10.3
     mgmt: 
       intf: Management0 
@@ -95,32 +102,35 @@ nabu:
       - name: lo0
         description: ROUTER LOOPBACK
         ips: 
-         - 10.10.10.3/32
+          - 10.10.10.3/32
         ospf: 
           area: 0.0.0.0
       - name: lo10
         description: TEST NETWORK
         ips: 
-         - 192.168.30.1/24
+          - 192.168.30.1/24
       - name: eth1
         description: NABU-R1 -> NABU-R2
         mtu: 1500
         ips:
-         - 10.100.0.4/31
+          - 10.100.0.4/31
         ospf: 
           area: 0.0.0.0
     services:
       bgp: 
-        asn: 200 
         peers:
-         - name: NABU-R2
-           ip: 10.10.10.4
-           asn: 200
+          - name: NABU-R2
+            ip: 10.10.10.4
+            asn: 200
 
-  - hostname: nabu-r2
-    device_type: ceos
-    device_role: access-router
-    site: nabu
+nabu-r2:
+  hostname: nabu-r2
+  groups:
+   - nabu 
+   - arista_eos
+  data: 
+    type: ceos
+    role: access-router
     addr_id: 10.10.10.4
     mgmt: 
       intf: Management0 
@@ -130,33 +140,32 @@ nabu:
       - name: lo0
         description: ROUTER LOOPBACK
         ips: 
-         - 10.10.10.4/32
+          - 10.10.10.4/32
         ospf: 
           area: 0.0.0.0
       - name: lo10
         description: TEST NETWORK
         ips: 
-         - 192.168.40.1/24
+          - 192.168.40.1/24
       - name: eth1
         description: NABU-R2 -> NABU-R1
         mtu: 1500
         ips:
-         - 10.100.0.5/31
+          - 10.100.0.5/31
         ospf: 
           area: 0.0.0.0
       - name: eth2
         description: NABU-R2 -> ACME-R2
         mtu: 1500
         ips:
-         - 10.100.0.3/31
+          - 10.100.0.3/31
 
     services:
       bgp: 
-        asn: 200 
         peers:
-         - name: ACME-R2
-           ip: 10.100.0.2
-           asn: 100
-         - name: NABU-R1
-           ip: 10.10.10.3
-           asn: 200
+          - name: ACME-R2
+            ip: 10.100.0.2
+            asn: 100
+          - name: NABU-R1
+            ip: 10.10.10.3
+            asn: 200

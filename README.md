@@ -126,6 +126,12 @@ There are device in inventory that doesn't have any available templates
  - Follow below steps to setup locally
  - Use poetry 
 
+**Export Variables:**
+```
+export SSH_USERNAME=admin
+export SSH_PASSWORD=admin
+```
+
 # Filters 
  * The fewer variables, the better! 
  * Filters are available at ```filters.py``` and more can be added as needed. Avoid using variables such as "mask/network/hsrp_ip" etc and instead specify prefix and use various filters to convert variable to correct format. 

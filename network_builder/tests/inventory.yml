@@ -1,5 +1,0 @@
-test:
-  - hostname: test-device
-    device_type: test-type
-    device_role: test-role
-    site: test

@@ -1,3 +1,4 @@
+---
 # --------------------------------
 # Cisco C6500
 - template_name: cisco_c6500
@@ -9,10 +10,17 @@
   device_types:
     - cisco_c6500
   config:
-    - cisco_ios_mgmt.j2
-    - cisco_ios_banner.j2
-    - cisco_ios_ipv6.j2
-
+    - cisco-ios-base.j2
+    - cisco-ios-banner.j2
+    - cisco-ios-dns.j2
+    - cisco-ios-logging.j2
+    - cisco-ios-mgmt.j2
+    - cisco-ios-ntp.j2
+    - cisco-ios-routing.j2
+    - cisco-ios-ospf.j2
+    - cisco-ios-bgp.j2
+    - cisco-ios-intfs.j2
+    - cisco-ios-security.j2
 
 # --------------------------------
 # Arista
@@ -32,3 +40,4 @@
     - arista-ceos-ospf.j2
     - arista-ceos-bgp.j2
     - arista-ceos-intfs.j2
+    - arista-ceos-security.j2

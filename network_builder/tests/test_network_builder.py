@@ -3,14 +3,8 @@ import unittest
 
 from config import Config as config
 from filters import *
-from helpers import load_yaml_file
 
-from network_builder import (
-    load_template,
-    load_templates,
-    render_config,
-    write_config_file,
-)
+from network_builder import load_templates, render_config
 
 
 class TestNetworkBuilder(unittest.TestCase):
@@ -21,12 +15,6 @@ class TestNetworkBuilder(unittest.TestCase):
         expected = "hostname test-device"
         output = render_config(input_tmpl, input_vars)
         self.assertEqual(output, expected)
-
-    def test_load_templates(self):
-
-        input = "tests/templates.yml"
-        output = load_templates(input)
-        self.assertIsInstance(output, list)
 
     """
     def test_load_template(self):

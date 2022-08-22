@@ -1,5 +1,4 @@
-# --------------------------------
-# Testing Template
+---
 - template_name: test_template
   device_roles:
     - test-role

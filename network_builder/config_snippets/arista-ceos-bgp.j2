@@ -9,21 +9,21 @@ route-map GLOBAL_PREFIXES permit 10
  match ip address prefix-list GLOBAL_PREFIXES
  set local-preference 500
  set origin igp
- set community {{ services.bgp.asn }}:1000
+ set community {{ asn }}:1000
 
 
-router bgp {{ services.bgp.asn }}
+router bgp {{ asn }}
    router-id {{ addr_id }}
    bgp advertise-inactive
    timers bgp {{ bgp.timers.keepalive }} {{ bgp.timers.hold }}
-   neighbor INTERNAL remote-as {{ services.bgp.asn }}
+   neighbor INTERNAL remote-as {{ asn }}
    neighbor INTERNAL next-hop-self
    neighbor INTERNAL update-source Loopback0
    neighbor INTERNAL description R1
    neighbor INTERNAL send-community standard extended
    {% for peer in services.bgp.peers %}
    neighbor {{ peer.ip }} description {{ peer.name }}
-   {% if peer.asn == services.bgp.asn %}
+   {% if peer.asn == asn %}
    neighbor {{ peer.ip }} peer group INTERNAL 
    {% else %}
    neighbor {{ peer.ip }} remote-as {{ peer.asn }}

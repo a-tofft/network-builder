@@ -16,7 +16,6 @@ router ospf 100
  timers pacing flood 5
  timers pacing retransmission 60
  ! Enables Incremental SPF algorithm to trigger less full SPF calculations. 
- ispf
  area 0 authentication message-digest
 {% for prefix in prefixes_ospf_v4 %}
  network {{ prefix|prefix_to_network }} {{ prefix|prefix_to_wildcard }} area 0

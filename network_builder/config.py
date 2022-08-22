@@ -1,37 +1,22 @@
+import os
+
+
 class Config(object):
 
     # General Settings
-    GROUP_VARS = "vars/main.yml"
-    TEMPLATES_FILE = "templates.yml"
+    TEMPLATES_FILE = "templates.yaml"
     SNIPPETS_DIR = "config_snippets"
-    INVENTORY = "inventory.yml"
     CONFIGS_DIR = "configs"
     CONFIG_FILE_SUFFIX = ".conf"
 
-    # LOGGING
-    LOG_LEVEL = "DEBUG"  # DEBUG>INFO>WARNING>ERROR>CRITICAL
-    DEBUG = True
+    # NORNIR
+    NR_HOST_FILE = "hosts.yaml"
+    NR_GROUP_FILE = "groups.yaml"
+    NR_DEFAULTS_FILE = "defaults.yaml"
+    NR_WORKERS = 100
 
-    # ENVIRONMENT
-    ENVIRONMENT = "STAGE"
+    # SSH
+    SSH_USERNAME = os.getenv("SSH_USERNAME")
+    SSH_PASSWORD = os.getenv("SSH_PASSWORD")
 
     COMMENT_CHAR = {"ceos": "!"}
-
-    # NAPALM
-    NAPALM_DRIVERS = {
-        "cisco-ios": "ios",
-        "cisco-ios-xe": "ios",
-        "ios": "ios",
-        "huawei-vrp-v5": "huawei_vrp",
-        "huawei-vrp-v8": "ce",
-        "cisco-ios-xr": "iosxr",
-        "asa": "asa",
-        "cisco-asa": "asa",
-        "cisco-nx-os": "nxos_ssh",
-    }
-
-    NAPALM_USERNAME = ""
-    # NAPALM_PASSWORD = os.getenv('NAPALM_PASSWORD')
-    NAPALM_SSH_TIMEOUT = 60
-    NAPALM_GLOBAL_DELAY_FACTOR = 1  # Default 1, see: netmiko "global_delay_factor"
-    NAPALM_SSH_CONFIG = "app/.ssh/ssh_config"

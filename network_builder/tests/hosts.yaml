@@ -1,0 +1,7 @@
+---
+test-device:
+  hostname: test-device
+  data: 
+    type: test-type
+    role: test-role
+    site: test
