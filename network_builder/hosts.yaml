@@ -23,6 +23,10 @@ acme-r1:
         description: TEST NETWORK
         ips: 
           - 192.168.10.1/24
+      - name: lo20
+        description: NEW LOOPBACK
+        ips: 
+          - 192.168.50.1/24
       - name: eth1
         description: ACME-R1 -> ACME-R2
         mtu: 1500
