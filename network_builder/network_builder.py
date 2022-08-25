@@ -219,8 +219,6 @@ def deploy_network(task: Task, dry_run=True) -> Result:
 
         message = f"Error deploying config for: {task.host.name} - {error_message}"
 
-        # sys.exit(1)
-
     return Result(
         host=task.host,
         custom_result=message,
