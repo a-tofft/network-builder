@@ -206,7 +206,7 @@ def deploy_network(task: Task, dry_run=True) -> Result:
             replace=True,
         )
 
-        message = f"Successfully deployed config for: {task.host.name}!"
+        message = f"Deployed config for: {task.host.name}, dry: {dry_run}"
 
     # "Returns:
     # changed (bool): whether the task is changing the system or not
