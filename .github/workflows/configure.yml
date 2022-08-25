@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - '!main'
-      - 'network-updates/*'
+      - '*'
 
 env:
   APP_DIR: ./network_builder
@@ -63,7 +63,7 @@ jobs:
 
      - name: generate_configs 
        working-directory: ${{ env.APP_DIR }}
-       run: ./network_builder.py
+       run: ./network_builder.py --build_config
 
   # Test configurations using batfish to avoid any errors
   test_configs:
@@ -91,7 +91,7 @@ jobs:
 
      - name: deploy_configs
        working-directory: ${{ env.APP_DIR }}
-       run: ./network_builder.py --dry
+       run: ./network_builder.py --deploy --dry_run
        env:
          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}

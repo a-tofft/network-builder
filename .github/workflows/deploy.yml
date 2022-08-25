@@ -25,7 +25,7 @@ jobs:
 
      - name: deploy_configs
        working-directory: ${{ env.APP_DIR }}
-       run: ./network_builder.py
+       run: ./network_builder.py --deploy
        env:
          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}

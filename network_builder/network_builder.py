@@ -19,24 +19,24 @@ from nornir_utils.plugins.tasks.files import write_file
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--generate_config",
-    dest="action",
+    "--build_config",
+    dest="build_config",
     action="store_true",
-    help="Will not run on devices",
+    help="Generate configs for all devices in inventory",
 )
 parser.add_argument(
     "--dry_run",
-    dest="dry",
+    dest="dry_run",
     action="store_true",
     help="Display potential changes but don't deploy",
 )
 parser.add_argument(
-    "--no_dry_run",
-    dest="dry",
-    action="store_false",
-    help="Deploy changes to all devices",
+    "--deploy",
+    dest="deploy",
+    action="store_true",
+    help="Try to push changes using napalm to devices",
 )
-parser.set_defaults(dry=True)
+parser.set_defaults(dry_run=False, generate_config=False, deploy=False)
 args = parser.parse_args()
 
 
@@ -224,7 +224,6 @@ def deploy_network(task: Task, dry_run=True) -> Result:
             filename=f"{config.CONFIGS_DIR}/{task.host}{config.CONFIG_FILE_SUFFIX}",
             dry_run=dry_run,
             replace=True,
-            vars=[],
         )
 
         message = f"Successfully deployed config for: {task.host.name}!"
@@ -232,9 +231,7 @@ def deploy_network(task: Task, dry_run=True) -> Result:
     # "Returns:
     # changed (bool): whether the task is changing the system or not
     # diff (string): change in the system
-
     except NornirSubTaskError as e:
-        print("WÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ")
         if isinstance(e.result.exception, ConnectionException):
             error_message = e.result.exception
         else:
@@ -269,20 +266,16 @@ def main():
     nr.inventory.defaults.password = config.SSH_PASSWORD
 
     # Generate Configs & Display Results
-    result = nr.run(name="Generate Configurations", task=generate_configs)
-    print_result(result, severity_level=logging.INFO, vars=["custom_result"])
+    if args.build_config:
+        result = nr.run(name="Generate Configurations", task=generate_configs)
+        print_result(result, severity_level=logging.INFO, vars=["custom_result"])
 
     # Deploy Configs to Network & Display Results
-    result = nr.run(name="Deploying Network", task=deploy_network, dry_run=True)
-    print_result(result, severity_level=logging.INFO, vars=["custom_result"])
-
-    """
-    config_files["deleted"] = cleanup_configs(config_files)
-    for file in config_files["deleted"]:
-        os.remove(f"{config.CONFIGS_DIR}/{file}")
-
-    print(config_files)
-    """
+    if args.deploy:
+        result = nr.run(
+            name="Deploying Network", task=deploy_network, dry_run=args.dry_run
+        )
+        print_result(result, severity_level=logging.INFO, vars=["custom_result"])
 
 
 if __name__ == "__main__":
