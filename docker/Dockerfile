@@ -1,5 +1,6 @@
 FROM python:3.9-slim-buster
 RUN pip install poetry
+RUN apt update && apt install -y git
 
 # Install dependencies:
 COPY poetry.lock pyproject.toml ./

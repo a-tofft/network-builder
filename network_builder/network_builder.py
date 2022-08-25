@@ -2,6 +2,8 @@
 import argparse
 import logging
 import os
+import pdb
+import sys
 
 from config import Config as config
 from filters import *
@@ -217,6 +219,8 @@ def deploy_network(task: Task, dry_run=True) -> Result:
 
         message = f"Error deploying config for: {task.host.name} - {error_message}"
 
+        # sys.exit(1)
+
     return Result(
         host=task.host,
         custom_result=message,
@@ -248,12 +252,18 @@ def main():
         result = nr.run(name="Generate Configurations", task=generate_configs)
         print_result(result, severity_level=logging.INFO, vars=["custom_result"])
 
+        if result.failed:
+            sys.exit(1)
+
     # Deploy Configs to Network & Display Results
     if args.deploy:
         result = nr.run(
             name="Deploying Network", task=deploy_network, dry_run=args.dry_run
         )
         print_result(result, severity_level=logging.INFO, vars=["custom_result"])
+
+        if result.failed:
+            sys.exit(1)
 
 
 if __name__ == "__main__":
