@@ -1,6 +1,6 @@
 ---
 # --------------------------------
-# Cisco C6500
+# Cisco Access/Dist Router
 - template_name: cisco_c6500
   # Compatible Device Roles 
   device_roles:
@@ -23,7 +23,7 @@
     - cisco-ios-security.j2
 
 # --------------------------------
-# Arista
+# Arista Access Router
 - template_name: arista_ceos
   device_roles:
     - access-router

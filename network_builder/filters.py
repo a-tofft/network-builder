@@ -9,7 +9,7 @@ def slugify_string(text: str) -> str:
     """
     convert the given string to a slug
     :param text:
-    :return:
+    :return: slugified string
     """
     return slugify(text, separator="_", lowercase=False)
 

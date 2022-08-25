@@ -1,13 +1,17 @@
-name: build network 
+name: Build Network
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - '!main'
+      - 'network-updates/*'
 
 env:
   APP_DIR: ./network_builder
 
 jobs:
+
+  # Lint Python Code
   lint_code:
     runs-on: self-hosted
     container:
@@ -19,8 +23,7 @@ jobs:
 
      - name: Simple Bash test 
        shell: bash
-       run: |
-          ls -ahl
+       run: ls -ahl
 
      - name: Black Python Code Lint 
        run: black . --check
@@ -28,7 +31,7 @@ jobs:
      - name: Isort Python Import Sort
        run: isort . --profile black --check
 
-
+  # Test Python Code
   test_code:
     runs-on: self-hosted
     container:
@@ -37,11 +40,6 @@ jobs:
     steps: 
      - name: Check out this repository  
        uses: actions/checkout@v2
-
-     - name: Simple Bash test 
-       working-directory: ${{ env.APP_DIR }}
-       shell: bash
-       run: ls -ahl
 
      - name: Test Jinja2 Filters
        working-directory: ${{ env.APP_DIR }}
@@ -52,6 +50,7 @@ jobs:
        working-directory: ${{ env.APP_DIR }}
        run: python -m unittest tests.test_network_builder -v
 
+  # Build Network Configurations
   build_configs:
     runs-on: self-hosted
     needs: [lint_code, test_code]
@@ -66,7 +65,7 @@ jobs:
        working-directory: ${{ env.APP_DIR }}
        run: ./network_builder.py
 
-
+  # Test configurations using batfish to avoid any errors
   test_configs:
     runs-on: self-hosted
     needs: [build_configs]
@@ -79,17 +78,8 @@ jobs:
      - name: Test Configuration via Batfish 
        run: batfish/test_configs.py --disable-pytest-warnings -s
 
-       # Commit changes to repository if they succeed
-     #- name: Commit and push if it changed
-     #  run: |-
-     #   git config user.name "Automated"
-     #   git config user.email "actions@users.noreply.github.com"
-     #   git add -A
-     #   timestamp=$(date -u)
-     #   git commit -m "Latest data: ${timestamp}" || exit 0
-     #   git push
-
-  deploy_configs:
+  # Display changes that would be made to the network in a dry-run
+  deploy_configs_dry:
     runs-on: self-hosted
     needs: [test_configs]
     container:
@@ -101,7 +91,18 @@ jobs:
 
      - name: deploy_configs
        working-directory: ${{ env.APP_DIR }}
-       run: ./network_builder.py
+       run: ./network_builder.py --dry
        env:
          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+
+    # Commit all new configs if all tests succeeded
+     - name: Commit generated configs
+       run: |-
+         git config user.name "network_robot"
+         git config user.email "actions@users.noreply.github.com"
+         git add -A
+         timestamp=$(date -u)
+         git commit -m "Updated Configs: ${timestamp}" || exit 0
+         git push
+

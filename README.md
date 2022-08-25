@@ -1,5 +1,7 @@
-# Network Builder
-Yet another network configuration builder... Wrote this a while back to demo concepts relating to generation of network configuration for network devices and relating concepts such as:
+# Intro 
+A simple, lightweight Network Configuration Builder & Deployer that showcases concepts related to generation of network configuration, deployment of it, pre-verification and post-verifications of deployment. Utilizing Github Actions for deployment. 
+
+## Features
  - Scaling/Handling of multiple vendors, templates & "snippets"
  - Different methods of resource allocation for devices 
  - CI/CD in relation to config generation 
@@ -9,32 +11,25 @@ Yet another network configuration builder... Wrote this a while back to demo con
  - Complete version history of: Templates & Configurations
  - Support for CLI & OpenConfig
 
-## Design Decisions
 Having a working SoT should always be priority #1. Trying to automate/generate configs for the network without this can quickly become messy. 
 The idea is that you generate full configurations, and push either full configurations (replace) to devices or see (extnesions) push the difference in configs. 
 With this approach, you don't need to take any backups of device configurations, as your SoT for configs is kept fully within this repository. 
 Note: For lab purposes, variables have not been abstracted and are rather explicit in what they mean.
 Normally it would be preferred to abstract variables and jinja2 templates
-# Features 
-
-### Variables 
-The less variables, the better. Rather use design decisions that naturally lead to same 
-configuration on every device without requirering any more variables. For example, always use uplink on port X, always use loopback X for management etc. This reduces complexity significantly. 
-
-### Speed:
-Generates configurations for 1000 devices in less than 2 minutes on a public github.
-Finds necessary configuration files that have been updated (and are ready to be pushed) in less than 1 minute for 1000 devices. 
 
 ## Ansible vs Python
+Generates configurations for 1000 devices in less than 2 minutes on a public github.
+Finds necessary configuration files that have been updated (and are ready to be pushed) in less than 1 minute for 1000 devices.
+
 Easy to extend functionality which is likely needed for 
 Even with ansible, code will be required for certain extensions/issues. 
 Speed 
 Therefore, as with the concept of usin... 
 Verify fast, can generate configurations for 1000 devices within a minute on github
 
-## Templating Concepts
-
-## Topology 
+Naturally integrates into Django/Flask
+## Demo Topology 
+Directions for setting up topology locally can be found here: https://github.com/a-tofft/network-labs/tree/main/network-builder
 
 ![Topology](lab-topology.png)
 
@@ -48,8 +43,12 @@ Verify fast, can generate configurations for 1000 devices within a minute on git
 | nabu-r2 | 172.20.20.24 | 192.168.40.0/24 | 10.10.10.4 | ceos |
 |         |             |                 |            |      |
 
+## Variables 
+The less variables, the better. Rather use design decisions that naturally lead to same 
+configuration on every device without requirering any more variables. For example, always use uplink on port X, always use loopback X for management etc. This reduces complexity significantly.
 
-## Walkthrough 
+
+## Workflow 
  1. CI/CD runs 
  2. If any changes were made in below files, run:
     1. - adsd
@@ -62,6 +61,33 @@ Verify fast, can generate configurations for 1000 devices within a minute on git
  * If all tests are successful, the changes are pushed to the stage branch as a request
  * Changes are then accepted by a human and merged
  * Necessary configurations are pushed to devices. 
+
+**Step 1:** - Engineer Clones Repository
+```shell
+git clone https://github.com/a-tofft/network-builder.git
+```
+
+**Step 2:** - Engineer Creates a new feature branch and performs changes 
+```shell 
+git checkout -b new_router_acme-r3
+> Switched to a new branch 'new_router_acme-r3'
+
+* Implement Changes * 
+
+git add .
+git commit -m "Added new router: acme-r3"
+git push -u origin new_router_acme-r3
+```
+
+**Step 3:** - CI/CD Pipeline generates configuration & Verifies changes using Batfish
+- Engineer verifies that everything looks OK 
+
+**Step 4:** - Engineer creates a pull request to merge changes to the main branch
+
+**Step 4:**
+- After successfull Merge CI/CD Pipeline Uploads Configuration to branch 
+- And then deploys them. 
+
 
 # Configuration Templates & Snippets 
 As the vendors in your network grow and the different device types grow, it becomes hard to maintain the templates 
@@ -260,62 +286,3 @@ ContainerLab:
 
 Arista NetConf:
  - https://github.com/arista-netdevops-community/arista_eos_automation_with_ncclient
-
-```
-
-site: pot-gla
-  name: rtr1-pot-gla
-  ipv4: 
-  ASN:
-  device_type: c6500
-  role: core-router
-  network: 
-    lo0.0:
-      ips:
-        - addr: 
-        - addr: 
-  ports:
-   - name: eth1/2 
-     peer: 
-     ipv4: 
-     mtu:
-   - name: eth1/3 
-  services:
-    bgp_peers:
-
-
-rtr2-pot-gla.example.net:
-
-
-rtr3-pot-gla.example.net:
-
-
-sw1-pot-gla.example.net:
-
-
-pot-gla:
-  - hostname: rtr1-pot-gla
-    device_type: cisco_c6500
-    device_role: access-router
-    asn: 65000
-    site: pot-gla
-    network:
-      lo0: 
-        ips: 
-         - 10.10.10.24/32
-         - 2001::932:24/128
-      
-
-
-  - hostname: rtr2-pot-gla
-    device_type: cisco_c6500
-    device_role: access-router
-    asn: 65000
-    site: pot-gla
-    network:
-      lo0: 
-        ips: 
-         - 10.10.10.24/32
-         - 2001::932:24/128
-
-```

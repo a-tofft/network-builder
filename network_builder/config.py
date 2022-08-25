@@ -19,4 +19,6 @@ class Config(object):
     SSH_USERNAME = os.getenv("SSH_USERNAME")
     SSH_PASSWORD = os.getenv("SSH_PASSWORD")
 
-    COMMENT_CHAR = {"ceos": "!"}
+    # Comment Character for Network OS
+    COMMENT_CHARS = {"eos": "!", "huawei-vrp": "#"}
+    COMMENT_DEFAULT = "!"

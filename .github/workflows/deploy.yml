@@ -1,0 +1,31 @@
+name: Deploy Network 
+
+on:
+  pull_request:
+    branches: 
+      - main
+# Schedule to run every hour to make sure golden config is always applied in case of rogue network activities. 
+#  workflow_dispatch:
+#  schedule:
+#    - cron:  '*/60 * * * *'
+
+env:
+  APP_DIR: ./network_builder
+
+jobs:
+
+  deploy_configs:
+    runs-on: self-hosted
+    container:
+      image: anttof/network-builder:latest
+
+    steps: 
+     - name: Check out this repository  
+       uses: actions/checkout@v2
+
+     - name: deploy_configs
+       working-directory: ${{ env.APP_DIR }}
+       run: ./network_builder.py
+       env:
+         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}

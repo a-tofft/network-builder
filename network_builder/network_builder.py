@@ -1,13 +1,15 @@
 #!/usr/bin/env python
+import argparse
 import logging
 import os
-from pprint import pprint
 
 from config import Config as config
 from filters import *
 from jinja2 import DebugUndefined, Environment, FileSystemLoader, Undefined
 from jinja2.meta import find_undeclared_variables
+from napalm.base.exceptions import ConnectionException
 from nornir import InitNornir
+from nornir.core.exceptions import NornirSubTaskError
 from nornir.core.task import Result, Task
 from nornir_napalm.plugins.tasks import napalm_configure
 from nornir_netmiko import netmiko_send_command
@@ -15,22 +17,36 @@ from nornir_utils.plugins.functions import print_result
 from nornir_utils.plugins.tasks.data import load_yaml
 from nornir_utils.plugins.tasks.files import write_file
 
-
-class UndefinedVars(Undefined):
-
-    """
-    Handler for undefined Vars
-    """
-
-    def _fail_with_undefined_error(self, *args, **kwargs):
-        # logging.exception("JINJA2: something was undefined!")
-        print(args)
-        print(kwargs)
-        raise Exception(f"Undefined Variables")
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--generate_config",
+    dest="action",
+    action="store_true",
+    help="Will not run on devices",
+)
+parser.add_argument(
+    "--dry_run",
+    dest="dry",
+    action="store_true",
+    help="Display potential changes but don't deploy",
+)
+parser.add_argument(
+    "--no_dry_run",
+    dest="dry",
+    action="store_false",
+    help="Deploy changes to all devices",
+)
+parser.set_defaults(dry=True)
+args = parser.parse_args()
 
 
 def identify_device_template(task: Task, templates: list) -> dict:
-    """Tries to find correct template by finding matching device_type and device_role"""
+    """
+    Tries to find correct template for a device by matching the role and type
+    of the device with a template of the same.
+    :param templates: List of all templates
+    :return: The template that was found as a dictionary
+    """
 
     for template in templates:
         if (
@@ -45,18 +61,27 @@ def identify_device_template(task: Task, templates: list) -> dict:
 
 
 def load_template(task: Task, template: dict) -> str:
-    """Takes a template as input and loads template yml file in order
-    to put together all jinja2 snippet pieces together into single string"""
+    """
+    Takes a template as input and loads all "snippets" from config section of template.
+    Returns a single jinja2 string ready to be rendered.
+    :param template: Template to render
+    :return: A jinja2 string ready to be rendered
+    """
 
     try:
+        # Sets character for comments.
+        # Defaults to "config.COMMENT_DEFAULT" if no match is found.
+        comment_char = config.COMMENT_CHARS.get(
+            task.host.platform, config.COMMENT_DEFAULT
+        )
 
         jinja_string = ""
 
         # Add all jinja2 snippets to config
         for filename in template["config"]:
             with open(f"{config.SNIPPETS_DIR}/{filename}", "r") as f:
-                jinja_string += "!==========================\n"
-                jinja_string += f"!{filename}\n"
+                jinja_string += f"{comment_char}==========================\n"
+                jinja_string += f"{comment_char}{filename}\n"
                 jinja_string += f.read() + "\n"
                 f.close()
 
@@ -67,8 +92,13 @@ def load_template(task: Task, template: dict) -> str:
 
 
 def render_config(task: Task, render_string: str, render_vars: dict) -> str:
-    """Takes a full jinja2 string as input (template) along with render_vars
-    Outputs rendered configuration."""
+    """
+    Takes a jinja2 string as input (template) along with variables and renders
+    configuration.
+    :param render_string: Jinja2 string to render
+    :param render_vars: Variables to use during rendering
+    :return: A string with rendered config
+    """
 
     try:
 
@@ -101,7 +131,13 @@ def render_config(task: Task, render_string: str, render_vars: dict) -> str:
 
 
 def cleanup_configs(config_files: dict) -> list:
-    """cleanup configs that weren't used."""
+    """
+    Removes all network configuration files that were not listed
+    in the nornir inventory.
+    :param render_vars: Variables to use during rendering
+    :return: A list of all deleted files
+    """
+
     deleted = []
     for file in os.listdir(config.CONFIGS_DIR):
         if file.endswith(config.CONFIG_FILE_SUFFIX):
@@ -113,6 +149,14 @@ def cleanup_configs(config_files: dict) -> list:
 
 
 def generate_configs(task: Task) -> Result:
+    """
+    Takes a Nornir task object as input and tries to generate configuration
+    for the specified host.
+    :Generates: A configuration file for the host
+    :param task: A Nornir Task object
+    :return: A Nornir Result object
+    """
+
     templates = task.run(
         severity_level=logging.DEBUG,
         name="Load Templates",
@@ -132,7 +176,6 @@ def generate_configs(task: Task) -> Result:
 
     # Load all "snippets" from config section of template
     # And return a single jinja2 string ready to be rendered
-    # print(template["config"])
     render_string = task.run(
         severity_level=logging.DEBUG,
         name="Load Template",
@@ -150,7 +193,8 @@ def generate_configs(task: Task) -> Result:
     )
     task.host["config"] = host_config.result
 
-    task.run(
+    # Write config to file
+    changed = task.run(
         name="Write Config Files",
         task=write_file,
         filename=f"{config.CONFIGS_DIR}/{task.host}{config.CONFIG_FILE_SUFFIX}",
@@ -158,22 +202,56 @@ def generate_configs(task: Task) -> Result:
     )
 
     return Result(
-        host=task.host, result=f"Successfully generated Configs, amount of changes: 0"
+        host=task.host,
+        custom_result=f"Successfully generated Configs, Changed Config: {changed.result}",
     )
 
 
-def deploy_network(task: Task) -> Result:
+def deploy_network(task: Task, dry_run=True) -> Result:
+    """
+    Takes a Nornir task object as input and tries to Deploy Configuration to Network
+    Using Napalm with replace function.
+    :Generates: Pushes configuration to host
+    :param task: A Nornir Task object
+    :return: A Nornir Result object with changes made to configuration.
+    """
 
-    result = task.run(
-        name=f"Deploying config for: {task.host.name}!",
-        task=napalm_configure,
-        filename=f"{config.CONFIGS_DIR}/{task.host}{config.CONFIG_FILE_SUFFIX}",
-        dry_run=True,
-        replace=True,
+    #
+    try:
+        result = task.run(
+            name=f"Deploying config for: {task.host.name}!",
+            task=napalm_configure,
+            filename=f"{config.CONFIGS_DIR}/{task.host}{config.CONFIG_FILE_SUFFIX}",
+            dry_run=dry_run,
+            replace=True,
+            vars=[],
+        )
+
+        message = f"Successfully deployed config for: {task.host.name}!"
+
+    # "Returns:
+    # changed (bool): whether the task is changing the system or not
+    # diff (string): change in the system
+
+    except NornirSubTaskError as e:
+        print("WÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ")
+        if isinstance(e.result.exception, ConnectionException):
+            error_message = e.result.exception
+        else:
+            error_message = e.result.exception
+
+        message = f"Error deploying config for: {task.host.name} - {error_message}"
+
+    return Result(
+        host=task.host,
+        custom_result=message,
     )
 
 
 def main():
+    """
+    Main Function for Generating & Deploying Network Configs
+    """
 
     nr = InitNornir(
         inventory={
@@ -186,16 +264,17 @@ def main():
         }
     )
 
-    result = nr.run(name="Generate Configurations", task=generate_configs)
-
-    print_result(result, severity_level=logging.INFO, vars=["result"])
-
+    # Set username/password for all hosts
     nr.inventory.defaults.username = config.SSH_USERNAME
     nr.inventory.defaults.password = config.SSH_PASSWORD
 
-    # result = nr.run(task=netmiko_send_command, command_string="show arp")
-    result = nr.run(name="Deploying Network", task=deploy_network)
-    print_result(result)
+    # Generate Configs & Display Results
+    result = nr.run(name="Generate Configurations", task=generate_configs)
+    print_result(result, severity_level=logging.INFO, vars=["custom_result"])
+
+    # Deploy Configs to Network & Display Results
+    result = nr.run(name="Deploying Network", task=deploy_network, dry_run=True)
+    print_result(result, severity_level=logging.INFO, vars=["custom_result"])
 
     """
     config_files["deleted"] = cleanup_configs(config_files)
