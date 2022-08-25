@@ -17,28 +17,6 @@ from nornir_utils.plugins.functions import print_result
 from nornir_utils.plugins.tasks.data import load_yaml
 from nornir_utils.plugins.tasks.files import write_file
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--build_config",
-    dest="build_config",
-    action="store_true",
-    help="Generate configs for all devices in inventory",
-)
-parser.add_argument(
-    "--dry_run",
-    dest="dry_run",
-    action="store_true",
-    help="Display potential changes but don't deploy",
-)
-parser.add_argument(
-    "--deploy",
-    dest="deploy",
-    action="store_true",
-    help="Try to push changes using napalm to devices",
-)
-parser.set_defaults(dry_run=False, generate_config=False, deploy=False)
-args = parser.parse_args()
-
 
 def identify_device_template(task: Task, templates: list) -> dict:
     """
@@ -279,4 +257,29 @@ def main():
 
 
 if __name__ == "__main__":
+
+    # Parse Arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--build_config",
+        dest="build_config",
+        action="store_true",
+        help="Generate configs for all devices in inventory",
+    )
+    parser.add_argument(
+        "--dry_run",
+        dest="dry_run",
+        action="store_true",
+        help="Display potential changes but don't deploy",
+    )
+    parser.add_argument(
+        "--deploy",
+        dest="deploy",
+        action="store_true",
+        help="Try to push changes using napalm to devices",
+    )
+    parser.set_defaults(dry_run=False, generate_config=False, deploy=False)
+    args = parser.parse_args()
+
+    # Main Function
     main()
