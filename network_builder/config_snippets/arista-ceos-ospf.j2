@@ -1,0 +1,21 @@
+ip ospf router-id output-format hostnames
+
+router ospf {{ ospf.process_id }}
+ router-id {{ addr_id }}
+ max-metric router-lsa on-startup wait-for-bgp
+ timers lsa rx min interval 50
+ max-lsa 12000
+ timers lsa tx delay initial 10 100 1000
+ timers spf delay initial 50 250 2000
+ timers pacing flood 5
+{% for prefix in prefixes_ospf_v4 %}
+ network {{ prefix|prefix_to_network }} {{ prefix|prefix_to_wildcard }} area 0
+{% endfor %}
+
+ipv6 router ospf {{ ospf.process_id }}
+ router-id {{ addr_id }}
+ log-adjacency-changes detail
+ timers spf delay initial 50 250 2000
+ timers lsa tx delay initial 10 100 1000
+ timers lsa rx min interval 50
+ timers pacing flood 5

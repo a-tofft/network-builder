@@ -1,0 +1,9 @@
+---
+- template_name: test_template
+  device_roles:
+    - test-role
+  device_types:
+    - test-type
+  config:
+    - jinja_snippet1.j2
+    - jinja_snippet2.j2

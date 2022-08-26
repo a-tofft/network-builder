@@ -1,0 +1,4 @@
+{% for server in dns.servers %}
+ip name-server {{ server.addr|prefix_to_ip }}
+{% endfor %}
+dns domain {{ dns.domain }}

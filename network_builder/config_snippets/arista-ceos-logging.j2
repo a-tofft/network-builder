@@ -1,0 +1,6 @@
+logging buffered 250000 debugging
+logging trap informational
+logging console warnings
+{% for server in syslog.servers %}
+logging host {{ server.addr|prefix_to_ip }}
+{% endfor %}

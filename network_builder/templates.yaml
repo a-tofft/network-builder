@@ -1,0 +1,43 @@
+---
+# --------------------------------
+# Cisco Access/Dist Router
+- template_name: cisco_c6500
+  # Compatible Device Roles 
+  device_roles:
+    - access-router
+    - distribution-router
+  # Compatible Device Types
+  device_types:
+    - cisco_c6500
+  config:
+    - cisco-ios-base.j2
+    - cisco-ios-banner.j2
+    - cisco-ios-dns.j2
+    - cisco-ios-logging.j2
+    - cisco-ios-mgmt.j2
+    - cisco-ios-ntp.j2
+    - cisco-ios-routing.j2
+    - cisco-ios-ospf.j2
+    - cisco-ios-bgp.j2
+    - cisco-ios-intfs.j2
+    - cisco-ios-security.j2
+
+# --------------------------------
+# Arista Access Router
+- template_name: arista_ceos
+  device_roles:
+    - access-router
+  device_types:
+    - ceos
+  config:
+    - arista-ceos-base.j2
+    - arista-ceos-banner.j2
+    - arista-ceos-dns.j2
+    - arista-ceos-logging.j2
+    - arista-ceos-mgmt.j2
+    - arista-ceos-ntp.j2
+    - arista-ceos-routing.j2
+    - arista-ceos-ospf.j2
+    - arista-ceos-bgp.j2
+    - arista-ceos-intfs.j2
+    - arista-ceos-security.j2

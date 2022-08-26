@@ -1,0 +1,14 @@
+---
+acme:
+  data:
+    asn: 100
+
+nabu:
+  data:
+    asn: 200
+
+arista_eos:
+  platform: 'eos'
+
+cisco_ios:
+  platform: 'cisco_ios'

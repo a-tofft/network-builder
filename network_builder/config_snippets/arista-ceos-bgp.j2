@@ -1,0 +1,49 @@
+{% if services.bgp %}
+
+
+{% for prefix in bgp.global_prefixes %}
+ip prefix-list GLOBAL_PREFIXES permit {{ prefix }}
+{% endfor %}
+
+route-map GLOBAL_PREFIXES permit 10
+ match ip address prefix-list GLOBAL_PREFIXES
+ set local-preference 500
+ set origin igp
+ set community {{ asn }}:1000
+
+
+router bgp {{ asn }}
+   router-id {{ addr_id }}
+   bgp advertise-inactive
+   timers bgp {{ bgp.timers.keepalive }} {{ bgp.timers.hold }}
+   neighbor INTERNAL remote-as {{ asn }}
+   neighbor INTERNAL next-hop-self
+   neighbor INTERNAL update-source Loopback0
+   neighbor INTERNAL description R1
+   neighbor INTERNAL send-community standard extended
+   {% for peer in services.bgp.peers %}
+   neighbor {{ peer.ip }} description {{ peer.name }}
+   {% if peer.asn == asn %}
+   neighbor {{ peer.ip }} peer group INTERNAL 
+   {% else %}
+   neighbor {{ peer.ip }} remote-as {{ peer.asn }}
+   neighbor {{ peer.ip }} send-community standard
+   {% endif %}
+   {% endfor %}
+   redistribute connected route-map GLOBAL_PREFIXES
+   !
+   address-family ipv4
+   {% for peer in services.bgp.peers %}
+     {% if peer.ip | prefix_to_version == 4%}
+      neighbor {{ peer.ip }} activate
+     {% endif %}
+   {% endfor %}
+   !
+   address-family ipv6
+   {% for peer in services.bgp.peers %}
+     {% if peer.ip | prefix_to_version == 6 %}
+      neighbor {{ peer.ip }} activate
+     {% endif %}
+   {% endfor %}
+
+{% endif %}
